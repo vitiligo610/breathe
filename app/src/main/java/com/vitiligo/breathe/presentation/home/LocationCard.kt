@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,6 +43,7 @@ import com.vitiligo.breathe.domain.util.getAqiCategoryLabel
 import com.vitiligo.breathe.domain.util.getAqiFaceRes
 import com.vitiligo.breathe.domain.util.getOnAqiCategoryColor
 import com.vitiligo.breathe.presentation.shared.AqiValueBadge
+import com.vitiligo.breathe.presentation.shared.DashedVerticalDivider
 import com.vitiligo.breathe.ui.theme.BreatheTheme
 
 @Composable
@@ -87,45 +92,46 @@ fun LocationCard(
                     Text(
                         text = "${data.currentTempC}°",
                         color = onAqiColor,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
-
-                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = getAqiCategoryLabel(data.currentAqiCategory),
                     color = onAqiColor,
                     style = if (data.currentAqiCategory != AqiCategory.ORANGE) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Normal,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .height(38.dp)
+                        .wrapContentHeight(align = Alignment.CenterVertically)
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
 
                 Image(
                     painter = painterResource(id = getAqiFaceRes(data.currentAqiCategory)),
                     contentDescription = "AQI Face",
-                    modifier = Modifier.size(58.dp)
+                    modifier = Modifier
+                        .size(54.dp)
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
                         text = data.currentAqi.toString(),
                         color = onAqiColor,
-                        fontSize = 32.sp,
+                        fontSize = 31.sp,
                         fontWeight = FontWeight.Normal,
-                        lineHeight = 28.sp
                     )
                     Text(
                         text = "US AQI+",
                         color = onAqiColor.copy(alpha = 0.8f),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Light,
-                        lineHeight = 10.sp
+                        modifier = Modifier
+                            .offset(y = (-8).dp)
                     )
                 }
             }
@@ -145,20 +151,18 @@ fun LocationCard(
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = data.city,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = data.subtitle,
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier
@@ -166,27 +170,44 @@ fun LocationCard(
                         .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    data.forecasts.take(3).forEachIndexed { _, day ->
+                    data.forecasts.take(3).forEachIndexed { index, day ->
                         ForecastColumn(
                             data = day,
-                            modifier = Modifier.weight(1f)
                         )
+                        
+                        if (index < 2 && index < data.forecasts.take(3).size - 1) {
+                            DashedVerticalDivider(
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
                     }
                 }
 
                 Row(
-                    verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier.fillMaxWidth().weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
                     ) {
                         Text(
                             text = "22:00",
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .weight(1f)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+                            modifier = Modifier
+                                .size(18.dp)
                         )
                     }
                 }
@@ -208,9 +229,9 @@ private fun ForecastColumn(
     ) {
         Text(
             text = data.dayLabel,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Normal,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
         )
         AqiValueBadge(
             value = data.aqi,
@@ -232,13 +253,15 @@ private fun ForecastColumn(
             ) {
                 Text(
                     text = "${data.highTempC}°",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Normal
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
+                    lineHeight = 13.sp
                 )
                 Text(
                     text = "${data.lowTempC}°",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    lineHeight = 13.sp
                 )
             }
         }

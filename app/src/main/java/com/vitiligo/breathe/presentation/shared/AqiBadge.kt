@@ -25,16 +25,15 @@ fun AqiValueBadge(
 ) {
     Box(
         modifier = modifier
-            .width(42.dp)
+            .width(44.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(getAqiCategoryColor(category))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .background(getAqiCategoryColor(category)),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = value.toString(),
             color = getOnAqiCategoryColor(category),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold
         )
     }
