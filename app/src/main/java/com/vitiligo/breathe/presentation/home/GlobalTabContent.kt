@@ -1,27 +1,41 @@
 package com.vitiligo.breathe.presentation.home
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.vitiligo.breathe.data.placeholder.placeholderLocationCardData
+import com.vitiligo.breathe.domain.model.LocationCardData
+import com.vitiligo.breathe.ui.theme.BreatheTheme
 
 @Composable
 fun GlobalTabContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    locations: List<LocationCardData> = placeholderLocationCardData
 ) {
-    Box(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(top = 16.dp)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(top = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Content for Global (Contextual API Data)",
-            style = MaterialTheme.typography.bodyLarge
-        )
+        items(locations) { location ->
+            LocationCard(data = location)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun GlobalTabContentPreview() {
+    BreatheTheme {
+        GlobalTabContent()
     }
 }

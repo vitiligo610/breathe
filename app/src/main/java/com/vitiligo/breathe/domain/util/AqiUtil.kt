@@ -61,9 +61,9 @@ fun getAqiFaceRes(category: AqiCategory): Int {
 }
 
 fun getOnAqiCategoryColor(category: AqiCategory): Color {
-    if (category == AqiCategory.MAROON || category == AqiCategory.PURPLE) {
+    if (category == AqiCategory.MAROON || category == AqiCategory.PURPLE || category == AqiCategory.RED) {
         return Color.White
     }
 
-    return Color.Gray
+    return Color.Black
 }
