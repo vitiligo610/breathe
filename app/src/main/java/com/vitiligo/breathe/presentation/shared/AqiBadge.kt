@@ -1,4 +1,4 @@
-package com.vitiligo.breathe.presentation.aqi
+package com.vitiligo.breathe.presentation.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

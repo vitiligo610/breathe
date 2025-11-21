@@ -26,6 +26,13 @@ val displayFontFamily = FontFamily(
     )
 )
 
+val serifFontFamily = FontFamily(
+    Font(
+        googleFont = GoogleFont("Castoro"),
+        fontProvider = provider,
+    )
+)
+
 // Default Material 3 typography values
 val baseline = Typography()
 

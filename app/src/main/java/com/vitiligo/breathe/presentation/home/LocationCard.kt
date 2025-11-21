@@ -3,7 +3,6 @@ package com.vitiligo.breathe.presentation.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -39,7 +38,7 @@ import com.vitiligo.breathe.domain.util.getAqiCategoryColor
 import com.vitiligo.breathe.domain.util.getAqiCategoryLabel
 import com.vitiligo.breathe.domain.util.getAqiFaceRes
 import com.vitiligo.breathe.domain.util.getOnAqiCategoryColor
-import com.vitiligo.breathe.presentation.aqi.AqiValueBadge
+import com.vitiligo.breathe.presentation.shared.AqiValueBadge
 import com.vitiligo.breathe.ui.theme.BreatheTheme
 
 @Composable
