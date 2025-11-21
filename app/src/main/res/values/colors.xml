@@ -8,4 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorEmpty">#7f060097</color>
+    <color name="aqi_green">#FFABD162</color>
+    <color name="aqi_yellow">#FFF7D45F</color>
+    <color name="aqi_orange">#FFFC9957</color>
+    <color name="aqi_red">#FFF7666C</color>
+    <color name="aqi_purple">#FFA37DB8</color>
+    <color name="aqi_maroon">#FFA17584</color>
 </resources>

@@ -1,15 +1,11 @@
 package com.vitiligo.breathe.domain.util
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import com.vitiligo.breathe.R
 import com.vitiligo.breathe.domain.model.AqiCategory
-import com.vitiligo.breathe.ui.theme.AQI_GREEN
-import com.vitiligo.breathe.ui.theme.AQI_MAROON
-import com.vitiligo.breathe.ui.theme.AQI_ORANGE
-import com.vitiligo.breathe.ui.theme.AQI_PURPLE
-import com.vitiligo.breathe.ui.theme.AQI_RED
-import com.vitiligo.breathe.ui.theme.AQI_YELLOW
 
 fun getAqiCategoryLabel(category: AqiCategory): String {
     return when (category) {
@@ -27,19 +23,20 @@ fun getAqiCategoryLabel(category: AqiCategory): String {
     }
 }
 
+@Composable
 fun getAqiCategoryColor(category: AqiCategory): Color {
     return when (category) {
-        AqiCategory.GREEN -> AQI_GREEN
+        AqiCategory.GREEN -> colorResource(R.color.aqi_green)
 
-        AqiCategory.YELLOW -> AQI_YELLOW
+        AqiCategory.YELLOW -> colorResource(R.color.aqi_yellow)
 
-        AqiCategory.ORANGE -> AQI_ORANGE
+        AqiCategory.ORANGE -> colorResource(R.color.aqi_orange)
 
-        AqiCategory.RED -> AQI_RED
+        AqiCategory.RED -> colorResource(R.color.aqi_red)
 
-        AqiCategory.PURPLE -> AQI_PURPLE
+        AqiCategory.PURPLE -> colorResource(R.color.aqi_purple)
 
-        AqiCategory.MAROON -> AQI_MAROON
+        AqiCategory.MAROON -> colorResource(R.color.aqi_maroon)
     }
 }
 

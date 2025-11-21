@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,11 +49,11 @@ fun LocationCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -65,7 +66,7 @@ fun LocationCard(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(0.4f)
+                    .weight(0.3f)
                     .background(aqiColor)
                     .padding(top = 8.dp, bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -81,7 +82,7 @@ fun LocationCard(
                     Icon(
                         painter = painterResource(id = data.currentWeatherIconRes),
                         contentDescription = "Weather Icon",
-                        tint = onAqiColor,
+                        tint = if (onAqiColor == Color.Black) onAqiColor.copy(alpha = 0.4f) else onAqiColor,
                         modifier = Modifier.size(32.dp)
                     )
                     Text(
@@ -117,22 +118,25 @@ fun LocationCard(
                         text = data.currentAqi.toString(),
                         color = onAqiColor,
                         fontSize = 32.sp,
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
+                        lineHeight = 28.sp
                     )
                     Text(
                         text = "US AQI+",
                         color = onAqiColor.copy(alpha = 0.8f),
                         fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Light,
+                        lineHeight = 10.sp
                     )
                 }
             }
 
             Column(
+                verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxHeight()
                     .padding(vertical = 8.dp, horizontal = 12.dp)
-                    .weight(0.6f)
+                    .weight(0.7f)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -142,14 +146,15 @@ fun LocationCard(
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = data.city,
-                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = data.subtitle,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -160,34 +165,31 @@ fun LocationCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min),
-                    horizontalArrangement = Arrangement.Start
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    data.forecasts.take(3).forEachIndexed { index, day ->
+                    data.forecasts.take(3).forEachIndexed { _, day ->
                         ForecastColumn(
                             data = day,
                             modifier = Modifier.weight(1f)
                         )
-                        if (index < 2 && index < data.forecasts.take(3).size - 1) {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(1.dp)
-                                    .padding(vertical = 12.dp)
-                                    .background(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f))
-                            )
-                        }
                     }
                 }
 
-                Box(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                    contentAlignment = Alignment.BottomEnd
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
-                    Text(
-                        text = "22:00",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(
+                            text = "22:00",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
                 }
             }
         }
@@ -207,8 +209,8 @@ private fun ForecastColumn(
     ) {
         Text(
             text = data.dayLabel,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Normal,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         AqiValueBadge(
@@ -217,23 +219,27 @@ private fun ForecastColumn(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier
+                .padding(top = 2.dp)
         ) {
             Image(
                 painter = painterResource(id = data.weatherIconRes),
                 contentDescription = null,
                 modifier = Modifier.size(32.dp)
             )
-            Column {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = "${data.highTempC}°",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Normal
                 )
                 Text(
                     text = "${data.lowTempC}°",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
         }

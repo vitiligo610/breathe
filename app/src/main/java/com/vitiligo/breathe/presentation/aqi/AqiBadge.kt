@@ -35,7 +35,7 @@ fun AqiValueBadge(
             text = value.toString(),
             color = getOnAqiCategoryColor(category),
             style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.ExtraBold
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
