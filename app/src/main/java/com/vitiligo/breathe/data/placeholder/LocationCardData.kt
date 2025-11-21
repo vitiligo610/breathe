@@ -2,8 +2,8 @@ package com.vitiligo.breathe.data.placeholder
 
 import com.vitiligo.breathe.R
 import com.vitiligo.breathe.domain.model.AqiCategory
-import com.vitiligo.breathe.domain.model.ForecastDay
-import com.vitiligo.breathe.domain.model.LocationCardData
+import com.vitiligo.breathe.domain.model.ui.ForecastDay
+import com.vitiligo.breathe.domain.model.ui.LocationCardData
 import com.vitiligo.breathe.domain.util.getWeatherIconRes
 
 val placeholderLocationCardData = listOf(
@@ -41,7 +41,8 @@ val placeholderLocationCardData = listOf(
                 highTempC = 27,
                 lowTempC = 23
             )
-        )
+        ),
+        time = "18:00"
     ),
     LocationCardData(
         id = 2,
@@ -69,6 +70,7 @@ val placeholderLocationCardData = listOf(
                 highTempC = 18,
                 lowTempC = 10
             )
-        )
+        ),
+        time = "12:00"
     )
 )

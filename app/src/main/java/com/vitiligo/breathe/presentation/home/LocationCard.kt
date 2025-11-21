@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vitiligo.breathe.data.placeholder.placeholderLocationCardData
 import com.vitiligo.breathe.domain.model.AqiCategory
-import com.vitiligo.breathe.domain.model.ForecastDay
-import com.vitiligo.breathe.domain.model.LocationCardData
+import com.vitiligo.breathe.domain.model.ui.ForecastDay
+import com.vitiligo.breathe.domain.model.ui.LocationCardData
 import com.vitiligo.breathe.domain.util.getAqiCategoryColor
 import com.vitiligo.breathe.domain.util.getAqiCategoryLabel
 import com.vitiligo.breathe.domain.util.getAqiFaceRes
@@ -195,7 +195,7 @@ fun LocationCard(
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = "22:00",
+                            text = data.time,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
                             style = MaterialTheme.typography.labelSmall,
                             textAlign = TextAlign.Center,

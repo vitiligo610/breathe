@@ -1,6 +1,7 @@
-package com.vitiligo.breathe.domain.model
+package com.vitiligo.breathe.domain.model.ui
 
 import androidx.annotation.DrawableRes
+import com.vitiligo.breathe.domain.model.AqiCategory
 
 data class ForecastDay(
     val dayLabel: String,
@@ -20,5 +21,6 @@ data class LocationCardData(
     val currentTempC: Int,
     @DrawableRes val currentWeatherIconRes: Int,
     val dominantPollutant: String,
-    val forecasts: List<ForecastDay>
+    val forecasts: List<ForecastDay>,
+    val time: String
 )

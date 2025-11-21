@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.presentation.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,11 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.vitiligo.breathe.data.placeholder.placeholderLocationCardData
-import com.vitiligo.breathe.domain.model.LocationCardData
+import com.vitiligo.breathe.domain.model.ui.LocationCardData
 import com.vitiligo.breathe.ui.theme.BreatheTheme
 
 @Composable
 fun GlobalTabContent(
+    navigateToLocationDetails: (Int) -> Unit,
     modifier: Modifier = Modifier,
     locations: List<LocationCardData> = placeholderLocationCardData
 ) {
@@ -27,7 +29,11 @@ fun GlobalTabContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(locations) { location ->
-            LocationCard(data = location)
+            LocationCard(
+                data = location,
+                modifier = Modifier
+                    .clickable { navigateToLocationDetails(location.id) }
+            )
         }
     }
 }
@@ -36,6 +42,8 @@ fun GlobalTabContent(
 @Composable
 private fun GlobalTabContentPreview() {
     BreatheTheme {
-        GlobalTabContent()
+        GlobalTabContent(
+            navigateToLocationDetails = { }
+        )
     }
 }

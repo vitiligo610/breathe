@@ -16,6 +16,7 @@ import com.vitiligo.breathe.domain.model.HomeTab
 
 @Composable
 fun HomeContent(
+    navigateToLocationDetails: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(HomeTab.GLOBAL.ordinal) }
@@ -34,8 +35,10 @@ fun HomeContent(
 
         Box(modifier = Modifier.fillMaxSize()) {
             when (tabs[selectedTabIndex]) {
+                HomeTab.GLOBAL -> GlobalTabContent(
+                    navigateToLocationDetails = navigateToLocationDetails
+                )
                 HomeTab.MY_SENSORS -> MySensorsTabContent()
-                HomeTab.GLOBAL -> GlobalTabContent()
             }
         }
     }

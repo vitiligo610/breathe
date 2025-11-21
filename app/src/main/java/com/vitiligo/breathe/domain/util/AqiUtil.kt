@@ -40,6 +40,23 @@ fun getAqiCategoryColor(category: AqiCategory): Color {
     }
 }
 
+@Composable
+fun getAqiCategoryDarkColor(category: AqiCategory): Color {
+    return when (category) {
+        AqiCategory.GREEN -> colorResource(R.color.aqi_green_dark)
+
+        AqiCategory.YELLOW -> colorResource(R.color.aqi_yellow_dark)
+
+        AqiCategory.ORANGE -> colorResource(R.color.aqi_orange_dark)
+
+        AqiCategory.RED -> colorResource(R.color.aqi_red_dark)
+
+        AqiCategory.PURPLE -> colorResource(R.color.aqi_purple_dark)
+
+        AqiCategory.MAROON -> colorResource(R.color.aqi_maroon_dark)
+    }
+}
+
 @DrawableRes
 fun getAqiFaceRes(category: AqiCategory): Int {
     return when (category) {
