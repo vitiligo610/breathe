@@ -1,13 +1,12 @@
 package com.vitiligo.breathe.domain.model.ui
 
-import androidx.annotation.DrawableRes
 import com.vitiligo.breathe.domain.model.AqiCategory
 
 data class ForecastDay(
     val dayLabel: String,
     val aqi: Int,
     val aqiCategory: AqiCategory,
-    @DrawableRes val weatherIconRes: Int,
+    val weatherIcon: String,
     val highTempC: Int,
     val lowTempC: Int
 )
@@ -19,7 +18,7 @@ data class LocationCardData(
     val currentAqi: Int,
     val currentAqiCategory: AqiCategory,
     val currentTempC: Int,
-    @DrawableRes val currentWeatherIconRes: Int,
+    val currentWeatherIcon: String,
     val dominantPollutant: String,
     val forecasts: List<ForecastDay>,
     val time: String

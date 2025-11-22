@@ -1,10 +1,8 @@
 package com.vitiligo.breathe.data.placeholder
 
-import com.vitiligo.breathe.R
 import com.vitiligo.breathe.domain.model.AqiCategory
 import com.vitiligo.breathe.domain.model.ui.ForecastDay
 import com.vitiligo.breathe.domain.model.ui.LocationCardData
-import com.vitiligo.breathe.domain.util.getWeatherIconRes
 
 val placeholderLocationCardData = listOf(
     LocationCardData(
@@ -14,14 +12,14 @@ val placeholderLocationCardData = listOf(
         currentAqi = 199,
         currentAqiCategory = AqiCategory.YELLOW,
         currentTempC = 18,
-        currentWeatherIconRes = R.drawable.ic_weather_few_clouds_full_32,
+        currentWeatherIcon = "01d",
         dominantPollutant = "PM2.5",
         forecasts = listOf(
             ForecastDay(
                 dayLabel = "Today",
                 aqi = 167,
                 aqiCategory = AqiCategory.RED,
-                weatherIconRes = getWeatherIconRes("02d"),
+                weatherIcon = "02d",
                 highTempC = 26,
                 lowTempC = 18
             ),
@@ -29,7 +27,7 @@ val placeholderLocationCardData = listOf(
                 dayLabel = "Fri",
                 aqi = 79,
                 aqiCategory = AqiCategory.YELLOW,
-                weatherIconRes = getWeatherIconRes("01d"),
+                weatherIcon = "01d",
                 highTempC = 27,
                 lowTempC = 20
             ),
@@ -37,7 +35,7 @@ val placeholderLocationCardData = listOf(
                 dayLabel = "Sat",
                 aqi = 86,
                 aqiCategory = AqiCategory.YELLOW,
-                weatherIconRes = getWeatherIconRes("01d"),
+                weatherIcon = "01d",
                 highTempC = 27,
                 lowTempC = 23
             )
@@ -51,14 +49,14 @@ val placeholderLocationCardData = listOf(
         currentAqi = 45,
         currentAqiCategory = AqiCategory.ORANGE,
         currentTempC = 12,
-        currentWeatherIconRes = R.drawable.ic_weather_clear_sky_full_32,
+        currentWeatherIcon = "02d",
         dominantPollutant = "O3",
         forecasts = listOf(
             ForecastDay(
                 dayLabel = "Today",
                 aqi = 50,
                 aqiCategory = AqiCategory.GREEN,
-                weatherIconRes = getWeatherIconRes("01d"),
+                weatherIcon = "01d",
                 highTempC = 15,
                 lowTempC = 8
             ),
@@ -66,7 +64,7 @@ val placeholderLocationCardData = listOf(
                 dayLabel = "Sat",
                 aqi = 65,
                 aqiCategory = AqiCategory.YELLOW,
-                weatherIconRes = getWeatherIconRes("04d"),
+                weatherIcon = "04d",
                 highTempC = 18,
                 lowTempC = 10
             )
