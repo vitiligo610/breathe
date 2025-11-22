@@ -7,6 +7,7 @@ import androidx.compose.ui.res.colorResource
 import com.vitiligo.breathe.R
 import com.vitiligo.breathe.domain.model.AqiCategory
 import com.vitiligo.breathe.domain.model.Pollutant
+import com.vitiligo.breathe.domain.model.ui.HealthRec
 
 fun getAqiCategoryLabel(category: AqiCategory): String {
     return when (category) {
@@ -149,4 +150,60 @@ fun getPollutantDetails(key: String, reading: Double, unit: String = "µg/m³"):
         unit = unit,
         category = getPollutantCategory(reading)
     )
+}
+
+@Composable
+fun getHealthRecommendations(category: AqiCategory): HealthRec {
+    val outdoorRec = "Avoid outdoor exercise"
+    val windowsRec = "Close your windows to avoid dirty outdoor air"
+    val maskRec = "Wear a mask outdoors"
+    val purifierRec = "Run an air purifier"
+
+    return when (category) {
+        AqiCategory.GREEN -> HealthRec(
+            category = category,
+            outdoorRec = "Enjoy outdoor activities", outdoorRes = R.drawable.ic_exercise_green,
+            windowsRec = "Open your windows to bring clean, fresh air indoors", windowsRes = R.drawable.ic_window_green
+        )
+
+        AqiCategory.YELLOW -> HealthRec(
+            category = category,
+            outdoorRec = "Sensitive groups should reduce outdoor exercise", outdoorRes = R.drawable.ic_exercise_yellow,
+            windowsRec = "Close your windows to avoid dirty outdoor air", windowsRes = R.drawable.ic_window_yellow,
+            maskRec = "Sensitive groups should wear a mask outdoors", maskRes = R.drawable.ic_mask_yellow,
+            purifierRec = "Sensitive groups should run an air purifier",  purifierRes = R.drawable.ic_purifier_yellow
+        )
+
+        AqiCategory.ORANGE -> HealthRec(
+            category = category,
+            outdoorRec = "Reduce outdoor exercise", outdoorRes = R.drawable.ic_exercise_orange,
+            windowsRec = "Close your windows to avoid dirty outdoor air", windowsRes = R.drawable.ic_window_orange,
+            maskRec = "Sensitive groups should wear a mask outdoors", maskRes = R.drawable.ic_mask_orange,
+            purifierRec = "Run an air purifier", purifierRes = R.drawable.ic_purifier_orange
+        )
+
+        AqiCategory.RED -> HealthRec(
+            category = category,
+            outdoorRec = outdoorRec,  outdoorRes = R.drawable.ic_exercise_red,
+            windowsRec = windowsRec, windowsRes = R.drawable.ic_window_red,
+            maskRec = maskRec, maskRes = R.drawable.ic_mask_red,
+            purifierRec = purifierRec, purifierRes = R.drawable.ic_purifier_red
+        )
+
+        AqiCategory.PURPLE -> HealthRec(
+            category = category,
+            outdoorRec = outdoorRec,  outdoorRes = R.drawable.ic_exercise_purple,
+            windowsRec = windowsRec, windowsRes = R.drawable.ic_window_purple,
+            maskRec = maskRec, maskRes = R.drawable.ic_mask_purple,
+            purifierRec = purifierRec, purifierRes = R.drawable.ic_purifier_purple
+        )
+
+        AqiCategory.MAROON -> HealthRec(
+            category = category,
+            outdoorRec = outdoorRec,  outdoorRes = R.drawable.ic_exercise_maroon,
+            windowsRec = windowsRec, windowsRes = R.drawable.ic_window_maroon,
+            maskRec = maskRec, maskRes = R.drawable.ic_mask_maroon,
+            purifierRec = purifierRec, purifierRes = R.drawable.ic_purifier_maroon
+        )
+    }
 }

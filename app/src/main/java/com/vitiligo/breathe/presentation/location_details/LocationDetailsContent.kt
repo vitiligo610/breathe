@@ -31,5 +31,7 @@ fun LocationDetailsContent(
         item { AirPollutants() }
 
         item { ReadingMetCard() }
+
+        item { HealthRecommendations() }
     }
 }
