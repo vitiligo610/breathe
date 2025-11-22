@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DashedVerticalDivider(
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-    thickness: Dp = 1.dp,
-    dashLength: Dp = 4.dp,
-    gapLength: Dp = 4.dp
+    color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+    thickness: Dp = (0.8).dp,
+    dashLength: Dp = 3.dp,
+    gapLength: Dp = 2.dp
 ) {
     Spacer(
         modifier = modifier

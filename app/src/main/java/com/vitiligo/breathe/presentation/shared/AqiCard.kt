@@ -68,11 +68,11 @@ fun AqiCard(
             .fillMaxWidth()
             .shadow(
                 elevation = animatedElevation.value.dp,
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 ambientColor = aqiColor,
                 spotColor = aqiColor
             ),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -99,8 +99,7 @@ fun AqiCard(
                         Text(
                             text = data.aqi.toString(),
                             color = onAqiColor,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                         )
                         Text(
                             text = "US AQI+",
@@ -162,18 +161,18 @@ fun AqiCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             WeatherDetailItem(
-                iconRes = getWeatherIconRes(data.weatherStatus),
+                iconRes = getWeatherIconRes(data.weatherIcon),
                 value = "${data.tempC.toInt()}°",
                 imageSize = 28.dp
             )
 
             WindDetailItem(
-                windSpeed = data.windSpeedMps,
+                windSpeed = data.windSpeedMph,
                 windDeg = data.windSpeedDeg,
             )
 
@@ -190,12 +189,12 @@ private fun WeatherDetailItem(
     iconRes: Int,
     value: String,
     modifier: Modifier = Modifier,
-    imageSize: Dp = 24.dp
+    imageSize: Dp = 20.dp
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Image(
             painter = painterResource(id = iconRes),
@@ -205,7 +204,8 @@ private fun WeatherDetailItem(
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 14.sp
         )
     }
 }
@@ -225,12 +225,13 @@ private fun WindDetailItem(
             painter = painterResource(id = R.drawable.ic_wind_direction_solid_24),
             contentDescription = "Wind Direction Arrow",
             modifier = Modifier
-                .size(24.dp)
+                .size(20.dp)
                 .rotate(windDeg.toFloat())
         )
         Text(
-            text = "$windSpeed mps",
+            text = "$windSpeed mph",
             style = MaterialTheme.typography.bodyLarge,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
     }
