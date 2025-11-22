@@ -3,13 +3,11 @@ package com.vitiligo.breathe.presentation.location_details
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
@@ -28,11 +26,55 @@ import com.vitiligo.breathe.domain.model.ui.HourlyForecastData
 import com.vitiligo.breathe.domain.util.getWeatherIconRes
 import com.vitiligo.breathe.presentation.shared.AqiValueBadge
 import com.vitiligo.breathe.presentation.shared.DashedVerticalDivider
+import com.vitiligo.breathe.presentation.shared.DetailBox
 
 @Composable
-private fun HourlyForecastItem(data: HourlyForecastData) {
+fun HourlyForecast(
+    modifier: Modifier = Modifier
+) {
+    DetailBox(
+        label = "Hourly forecast",
+        modifier = modifier
+    ) {
+        HourlyForecastContent()
+    }
+}
+
+@Composable
+private fun HourlyForecastContent(
+    modifier: Modifier = Modifier,
+    hourlyData: List<HourlyForecastData> = mockHourlyForecastData,
+) {
+    LazyRow(
+        modifier = modifier
+            .height(225.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp)
+    ) {
+        itemsIndexed(hourlyData) { index, data ->
+            Row(
+                modifier = Modifier
+            ) {
+                HourlyForecastItem(data = data)
+
+                if (index < hourlyData.lastIndex) {
+                    DashedVerticalDivider(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(horizontal = 8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HourlyForecastItem(
+    data: HourlyForecastData,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -104,34 +146,6 @@ private fun HourlyForecastItem(data: HourlyForecastData) {
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
-        }
-    }
-}
-
-@Composable
-fun HourlyForecast(
-    modifier: Modifier = Modifier,
-    hourlyData: List<HourlyForecastData> = mockHourlyForecastData,
-) {
-    LazyRow(
-        modifier = modifier
-            .height(225.dp),
-        horizontalArrangement = Arrangement.spacedBy(0.dp)
-    ) {
-        itemsIndexed(hourlyData) { index, data ->
-            Row(
-                modifier = Modifier
-            ) {
-                HourlyForecastItem(data = data)
-
-                if (index < hourlyData.lastIndex) {
-                    DashedVerticalDivider(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(horizontal = 8.dp)
-                    )
-                }
-            }
         }
     }
 }

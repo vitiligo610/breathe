@@ -2,15 +2,6 @@ package com.vitiligo.breathe.domain.model.ui
 
 import com.vitiligo.breathe.domain.model.AqiCategory
 
-data class ForecastDay(
-    val dayLabel: String,
-    val aqi: Int,
-    val aqiCategory: AqiCategory,
-    val weatherIcon: String,
-    val highTempC: Int,
-    val lowTempC: Int
-)
-
 data class LocationCardData(
     val id: Int,
     val city: String,
@@ -20,6 +11,6 @@ data class LocationCardData(
     val currentTempC: Int,
     val currentWeatherIcon: String,
     val dominantPollutant: String,
-    val forecasts: List<ForecastDay>,
+    val forecasts: List<ForecastDayData>,
     val time: String
 )

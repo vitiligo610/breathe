@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DetailBox(
     label: String,
-    content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    headerContent: @Composable () -> Unit = {}
+    headerContent: @Composable () -> Unit = {},
+    content: @Composable () -> Unit
 ) {
     val cornerRadius = 12.dp
     val outlineWidth = 1.dp

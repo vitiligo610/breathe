@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vitiligo.breathe.data.placeholder.placeholderLocationCardData
 import com.vitiligo.breathe.domain.model.AqiCategory
-import com.vitiligo.breathe.domain.model.ui.ForecastDay
+import com.vitiligo.breathe.domain.model.ui.ForecastDayData
 import com.vitiligo.breathe.domain.model.ui.LocationCardData
 import com.vitiligo.breathe.domain.util.getAqiCategoryColor
 import com.vitiligo.breathe.domain.util.getAqiCategoryLabel
@@ -219,7 +219,7 @@ fun LocationCard(
 
 @Composable
 private fun ForecastColumn(
-    data: ForecastDay,
+    data: ForecastDayData,
     modifier: Modifier = Modifier
 ) {
     Column(

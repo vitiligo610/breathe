@@ -1,7 +1,7 @@
 package com.vitiligo.breathe.data.placeholder
 
 import com.vitiligo.breathe.domain.model.AqiCategory
-import com.vitiligo.breathe.domain.model.ui.ForecastDay
+import com.vitiligo.breathe.domain.model.ui.ForecastDayData
 import com.vitiligo.breathe.domain.model.ui.LocationCardData
 
 val placeholderLocationCardData = listOf(
@@ -15,7 +15,7 @@ val placeholderLocationCardData = listOf(
         currentWeatherIcon = "01d",
         dominantPollutant = "PM2.5",
         forecasts = listOf(
-            ForecastDay(
+            ForecastDayData(
                 dayLabel = "Today",
                 aqi = 167,
                 aqiCategory = AqiCategory.RED,
@@ -23,7 +23,7 @@ val placeholderLocationCardData = listOf(
                 highTempC = 26,
                 lowTempC = 18
             ),
-            ForecastDay(
+            ForecastDayData(
                 dayLabel = "Fri",
                 aqi = 79,
                 aqiCategory = AqiCategory.YELLOW,
@@ -31,7 +31,7 @@ val placeholderLocationCardData = listOf(
                 highTempC = 27,
                 lowTempC = 20
             ),
-            ForecastDay(
+            ForecastDayData(
                 dayLabel = "Sat",
                 aqi = 86,
                 aqiCategory = AqiCategory.YELLOW,
@@ -52,7 +52,7 @@ val placeholderLocationCardData = listOf(
         currentWeatherIcon = "02d",
         dominantPollutant = "O3",
         forecasts = listOf(
-            ForecastDay(
+            ForecastDayData(
                 dayLabel = "Today",
                 aqi = 50,
                 aqiCategory = AqiCategory.GREEN,
@@ -60,7 +60,7 @@ val placeholderLocationCardData = listOf(
                 highTempC = 15,
                 lowTempC = 8
             ),
-            ForecastDay(
+            ForecastDayData(
                 dayLabel = "Sat",
                 aqi = 65,
                 aqiCategory = AqiCategory.YELLOW,
