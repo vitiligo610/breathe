@@ -30,7 +30,7 @@ fun DetailBox(
         modifier = modifier
             .border(
                 width = outlineWidth,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
                 shape = boxShape
             )
             .background(MaterialTheme.colorScheme.surface)
