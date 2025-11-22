@@ -29,5 +29,7 @@ fun LocationDetailsContent(
         item { DailyForecast() }
 
         item { AirPollutants() }
+
+        item { ReadingMetCard() }
     }
 }
