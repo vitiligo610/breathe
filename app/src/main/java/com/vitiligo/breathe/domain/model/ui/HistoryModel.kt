@@ -11,7 +11,7 @@ enum class HistoryTabOption(val key: String, val label: String, val unit: String
     O3("o3", "O3", "ppb")
 }
 
-data class HourlyHistoryPoint(
+data class HistoryPoint(
     val timestamp: LocalDateTime,
     val value: Double,
     val type: HistoryTabOption
