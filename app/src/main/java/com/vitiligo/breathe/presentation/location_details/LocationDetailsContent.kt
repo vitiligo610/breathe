@@ -33,5 +33,7 @@ fun LocationDetailsContent(
         item { ReadingMetCard() }
 
         item { HealthRecommendations() }
+
+        item { History() }
     }
 }

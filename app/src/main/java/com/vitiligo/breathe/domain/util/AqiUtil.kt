@@ -42,6 +42,22 @@ fun getAqiCategoryColor(category: AqiCategory): Color {
     }
 }
 
+fun getAQICategoryColor(category: AqiCategory): Color {
+    return when (category) {
+        AqiCategory.GREEN -> Color(0xFFABD162)
+
+        AqiCategory.YELLOW -> Color(0xFFF7D45F)
+
+        AqiCategory.ORANGE -> Color(0xFFFC9957)
+
+        AqiCategory.RED -> Color(0xFFF7666C)
+
+        AqiCategory.PURPLE -> Color(0xFFA37DB8)
+
+        AqiCategory.MAROON -> Color(0xFFA17584)
+    }
+}
+
 @Composable
 fun getAqiCategoryDarkColor(category: AqiCategory): Color {
     return when (category) {
