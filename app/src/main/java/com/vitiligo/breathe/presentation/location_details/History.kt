@@ -3,13 +3,15 @@ package com.vitiligo.breathe.presentation.location_details
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
@@ -24,17 +26,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.vitiligo.breathe.data.placeholder.mockDailyHistoryData
+import com.vitiligo.breathe.data.placeholder.mockDailyHistoryTabOptions
 import com.vitiligo.breathe.data.placeholder.mockHourlyHistoryData
+import com.vitiligo.breathe.data.placeholder.mockHourlyHistoryTabOptions
 import com.vitiligo.breathe.domain.model.ui.HistoryPoint
 import com.vitiligo.breathe.domain.model.ui.HistoryTabOption
-import com.vitiligo.breathe.domain.util.HistoryViewMode
+import com.vitiligo.breathe.domain.model.ui.HistoryViewMode
 import com.vitiligo.breathe.domain.util.getAqiCategoryLabel
 import com.vitiligo.breathe.domain.util.normalizeData
 import com.vitiligo.breathe.presentation.shared.DetailBox
@@ -46,22 +46,37 @@ import java.time.format.DateTimeFormatter
 fun History(
     modifier: Modifier = Modifier
 ) {
+    var data by rememberSaveable { mutableStateOf(mockHourlyHistoryData) }
+
     DetailBox(
         label = "History",
         modifier = modifier
     ) {
-        HistoryContent()
+        HistoryContent(
+            data = data,
+            onTabSelectionChange = { viewMode, option ->
+                data = if (viewMode == HistoryViewMode.Hourly) {
+                    mockHourlyHistoryData
+                } else {
+                    mockDailyHistoryData
+                }
+            }
+        )
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HistoryContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: List<HistoryPoint>,
+    onTabSelectionChange: (HistoryViewMode, HistoryTabOption) -> Unit = { _, _ ->  },
+    hourlyHistoryTabOptions: List<HistoryTabOption> = mockHourlyHistoryTabOptions,
+    dailyHistoryTabOptions: List<HistoryTabOption> = mockDailyHistoryTabOptions,
 ) {
     var viewMode by rememberSaveable { mutableStateOf(HistoryViewMode.Hourly) }
-
-    val data = if (viewMode == HistoryViewMode.Hourly) mockHourlyHistoryData else mockDailyHistoryData
+    var selectedHourlyHistoryTabOption by rememberSaveable { mutableStateOf(hourlyHistoryTabOptions[0]) }
+    var selectedDailyHistoryTabOption by rememberSaveable { mutableStateOf(dailyHistoryTabOptions[0]) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -77,11 +92,18 @@ private fun HistoryContent(
                         text = "Hourly",
                         style = MaterialTheme.typography.titleSmall,
                         textAlign = TextAlign.Center,
+                        color = if (viewMode == HistoryViewMode.Hourly) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
                     )
                 },
-                onClick = { viewMode = HistoryViewMode.Hourly },
-                modifier = Modifier.weight(1f)
+                onClick = {
+                    viewMode = HistoryViewMode.Hourly
+                    onTabSelectionChange(viewMode, hourlyHistoryTabOptions[0])
+                },
+                border = null,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 0.dp)
             )
             FilterChip(
                 selected = viewMode == HistoryViewMode.Daily,
@@ -90,19 +112,41 @@ private fun HistoryContent(
                         text = "Daily",
                         style = MaterialTheme.typography.titleSmall,
                         textAlign = TextAlign.Center,
+                        color = if (viewMode == HistoryViewMode.Daily) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
                     )
                 },
-                onClick = { viewMode = HistoryViewMode.Daily },
-                modifier = Modifier.weight(1f)
+                onClick = {
+                    viewMode = HistoryViewMode.Daily
+                    onTabSelectionChange(viewMode, dailyHistoryTabOptions[0])
+                },
+                border = null,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 0.dp)
             )
         }
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth())
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         HistoryChart(
             data = data,
-            viewMode = viewMode
+            viewMode = viewMode,
+            hourlyHistoryTabOptions = hourlyHistoryTabOptions,
+            dailyHistoryTabOptions = dailyHistoryTabOptions,
+            selectedHourlyHistoryTabOption = selectedHourlyHistoryTabOption,
+            selectedDailyHistoryTabOption = selectedDailyHistoryTabOption,
+            onHourlyTabOptionChange = {
+                selectedHourlyHistoryTabOption = it
+                onTabSelectionChange(viewMode, it)
+            },
+            onDailyTabOptionChange = {
+                selectedDailyHistoryTabOption = it
+                onTabSelectionChange(viewMode, it)
+            }
         )
     }
 }
@@ -111,35 +155,51 @@ private fun HistoryContent(
 @Composable
 fun HistoryChart(
     modifier: Modifier = Modifier,
-    data: List<HistoryPoint> = mockHourlyHistoryData,
-    viewMode: HistoryViewMode // Receive mode
+    data: List<HistoryPoint>,
+    viewMode: HistoryViewMode = HistoryViewMode.Hourly,
+    hourlyHistoryTabOptions: List<HistoryTabOption>,
+    dailyHistoryTabOptions: List<HistoryTabOption>,
+    selectedHourlyHistoryTabOption: HistoryTabOption,
+    selectedDailyHistoryTabOption: HistoryTabOption,
+    onHourlyTabOptionChange: (HistoryTabOption) -> Unit,
+    onDailyTabOptionChange: (HistoryTabOption) -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(HistoryTabOption.AQI) }
+    var selectedTabOption by remember { mutableStateOf(HistoryTabOption.AQI) }
 
-    val normalizedData = remember(selectedTab, viewMode, data) {
-        val filtered = data.filter { it.type == selectedTab }
-        normalizeData(filtered, viewMode)
+    val normalizedData = remember(selectedTabOption, viewMode, data) {
+        normalizeData(data, viewMode)
     }
 
     var selectedPoint by remember(normalizedData) {
         mutableStateOf(normalizedData.lastOrNull())
     }
-
+    
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
 
-//        HistoryTabs(
-//            selectedTab = selectedTab,
-//            onTabSelected = { selectedTab = it }
-//        )
+        HistoryTabs(
+            entries = if (viewMode == HistoryViewMode.Hourly) hourlyHistoryTabOptions else dailyHistoryTabOptions,
+            selectedTab = if (viewMode == HistoryViewMode.Hourly) selectedHourlyHistoryTabOption else selectedDailyHistoryTabOption,
+            onTabSelected = {
+                selectedTabOption = it
+                if (viewMode == HistoryViewMode.Hourly) {
+                    onHourlyTabOptionChange(it)
+                } else {
+                    onDailyTabOptionChange(it)
+                }
+            }
+        )
 
         if (normalizedData.isNotEmpty() && selectedPoint != null) {
             HistoryInfoHeader(
                 point = selectedPoint!!,
-                viewMode = viewMode
+                viewMode = viewMode,
+                selectedTabOption = selectedTabOption
             )
+
+            Spacer(Modifier.height(8.dp))
 
             HistoryBarChart(
                 data = normalizedData,
@@ -154,7 +214,10 @@ fun HistoryChart(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(12.dp)),
+                    .background(
+                        MaterialTheme.colorScheme.surfaceContainerLow,
+                        RoundedCornerShape(12.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -169,32 +232,32 @@ fun HistoryChart(
 
 @Composable
 private fun HistoryTabs(
+    entries: List<HistoryTabOption>,
     selectedTab: HistoryTabOption,
-    onTabSelected: (HistoryTabOption) -> Unit
+    onTabSelected: (HistoryTabOption) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
     ) {
-        HistoryTabOption.entries.forEach { tab ->
+        entries.forEach { tab ->
             val isSelected = tab == selectedTab
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                        else Color.Transparent
+
+            FilterChip(
+                selected = isSelected,
+                onClick = { onTabSelected(tab) },
+                label = {
+                    Text(
+                        text = tab.label,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                     )
-                    .clickable { onTabSelected(tab) }
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = tab.label,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer
-                    else MaterialTheme.colorScheme.onSurface
-                )
-            }
+                },
+                border = null
+            )
         }
     }
 }
@@ -203,7 +266,8 @@ private fun HistoryTabs(
 @Composable
 private fun HistoryInfoHeader(
     point: HistoryPoint,
-    viewMode: HistoryViewMode
+    viewMode: HistoryViewMode,
+    selectedTabOption: HistoryTabOption
 ) {
     val category = point.getCategory()
 
@@ -221,7 +285,10 @@ private fun HistoryInfoHeader(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+            .background(
+                MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.4f),
+                RoundedCornerShape(12.dp)
+            )
             .padding(16.dp)
     ) {
         Text(
@@ -239,12 +306,12 @@ private fun HistoryInfoHeader(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = point.type.label,
+                    text = selectedTabOption.label,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = point.type.unit,
+                    text = selectedTabOption.unit,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 )
@@ -270,11 +337,4 @@ private fun HistoryInfoHeader(
             }
         }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-private fun HourlyHistoryPreview() {
-    HistoryContent()
 }

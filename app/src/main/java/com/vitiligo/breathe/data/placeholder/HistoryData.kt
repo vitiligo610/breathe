@@ -15,8 +15,7 @@ val mockHourlyHistoryData = (0..23).map { i ->
     val value = 100 + (50 * sin(i * 0.3)).toInt()
     HistoryPoint(
         timestamp = time,
-        value = value.toDouble(),
-        type = HistoryTabOption.AQI
+        value = value.toDouble()
     )
 }
 
@@ -27,7 +26,17 @@ val mockDailyHistoryData = (0..29).map { i ->
     val finalValue = maxOf(10, value)
     HistoryPoint(
         timestamp = time.withHour(0).withMinute(0).withSecond(0).withNano(0),
-        value = finalValue.toDouble(),
-        type = HistoryTabOption.AQI
+        value = finalValue.toDouble()
     )
 }
+
+val mockHourlyHistoryTabOptions: List<HistoryTabOption> = listOf(
+    HistoryTabOption.AQI,
+    HistoryTabOption.PM2_5,
+    HistoryTabOption.PM10
+)
+
+val mockDailyHistoryTabOptions: List<HistoryTabOption> = listOf(
+    HistoryTabOption.AQI,
+    HistoryTabOption.PM10
+)

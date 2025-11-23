@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vitiligo.breathe.domain.model.ui.HistoryPoint
-import com.vitiligo.breathe.domain.util.HistoryViewMode
+import com.vitiligo.breathe.domain.model.ui.HistoryViewMode
 import com.vitiligo.breathe.domain.util.darken
 import com.vitiligo.breathe.domain.util.getAQICategoryColor
 import kotlin.math.ceil
