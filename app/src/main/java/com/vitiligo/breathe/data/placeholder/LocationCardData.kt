@@ -12,14 +12,14 @@ val placeholderLocationCardData = listOf(
         currentAqi = 199,
         currentAqiCategory = AqiCategory.YELLOW,
         currentTempC = 18,
-        currentWeatherIcon = "01d",
+        currentWeatherCode = 0,
         dominantPollutant = "PM2.5",
         forecasts = listOf(
             ForecastDayData(
                 dayLabel = "Today",
                 aqi = 167,
                 aqiCategory = AqiCategory.RED,
-                weatherIcon = "02d",
+                weatherCode = 3,
                 highTempC = 26,
                 lowTempC = 18
             ),
@@ -27,7 +27,7 @@ val placeholderLocationCardData = listOf(
                 dayLabel = "Fri",
                 aqi = 79,
                 aqiCategory = AqiCategory.YELLOW,
-                weatherIcon = "01d",
+                weatherCode = 2,
                 highTempC = 27,
                 lowTempC = 20
             ),
@@ -35,7 +35,7 @@ val placeholderLocationCardData = listOf(
                 dayLabel = "Sat",
                 aqi = 86,
                 aqiCategory = AqiCategory.YELLOW,
-                weatherIcon = "01d",
+                weatherCode = 1,
                 highTempC = 27,
                 lowTempC = 23
             )
@@ -49,14 +49,14 @@ val placeholderLocationCardData = listOf(
         currentAqi = 45,
         currentAqiCategory = AqiCategory.ORANGE,
         currentTempC = 12,
-        currentWeatherIcon = "02d",
+        currentWeatherCode = 2,
         dominantPollutant = "O3",
         forecasts = listOf(
             ForecastDayData(
                 dayLabel = "Today",
                 aqi = 50,
                 aqiCategory = AqiCategory.GREEN,
-                weatherIcon = "01d",
+                weatherCode = 1,
                 highTempC = 15,
                 lowTempC = 8
             ),
@@ -64,7 +64,7 @@ val placeholderLocationCardData = listOf(
                 dayLabel = "Sat",
                 aqi = 65,
                 aqiCategory = AqiCategory.YELLOW,
-                weatherIcon = "04d",
+                weatherCode = 3,
                 highTempC = 18,
                 lowTempC = 10
             )

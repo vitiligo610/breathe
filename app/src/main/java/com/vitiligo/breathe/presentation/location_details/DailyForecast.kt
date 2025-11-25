@@ -100,7 +100,7 @@ private fun DailyForecastContent(
                             .height(rowHeight)
                     ) {
                         Image(
-                            painter = painterResource(id = getWeatherIconRes(it.weatherIcon)),
+                            painter = painterResource(id = getWeatherIconRes(it.weatherCode)),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(32.dp)
@@ -147,7 +147,7 @@ private fun DailyForecastContent(
                                 .width(60.dp)
                         ) {
                             Text(
-                                text = "${it.windSpeedMph}",
+                                text = "${it.windSpeedKph}",
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.SemiBold
                             )

@@ -85,7 +85,7 @@ fun LocationCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        painter = painterResource(id = getWeatherIconRes(data.currentWeatherIcon)),
+                        painter = painterResource(id = getWeatherIconRes(data.currentWeatherCode)),
                         contentDescription = "Weather Icon",
                         tint = if (onAqiColor == Color.Black) onAqiColor.copy(alpha = 0.4f) else onAqiColor,
                         modifier = Modifier.size(32.dp)
@@ -245,7 +245,7 @@ private fun ForecastColumn(
                 .padding(top = 2.dp)
         ) {
             Image(
-                painter = painterResource(id = getWeatherIconRes(data.weatherIcon)),
+                painter = painterResource(id = getWeatherIconRes(data.weatherCode)),
                 contentDescription = null,
                 modifier = Modifier.size(32.dp)
             )

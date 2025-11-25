@@ -9,8 +9,8 @@ data class AqiCardData(
     val mainPollutantConcentration: Double,
     val mainPollutantConcentrationUnit: String = "µg/m³",
     val tempC: Double,
-    val weatherIcon: String,
-    val windSpeedMph: Double,
+    val weatherCode: Int,
+    val windSpeedKph: Double,
     val windSpeedDeg: Double,
     val humidityPercent: Double
 )

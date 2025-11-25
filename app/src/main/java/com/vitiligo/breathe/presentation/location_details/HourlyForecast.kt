@@ -97,7 +97,7 @@ private fun HourlyForecastItem(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Image(
-                painter = painterResource(id = getWeatherIconRes(data.weatherIcon)),
+                painter = painterResource(id = getWeatherIconRes(data.weatherCode)),
                 contentDescription = null,
                 modifier = Modifier.size(32.dp)
             )
@@ -121,7 +121,7 @@ private fun HourlyForecastItem(
                     .rotate(data.windSpeedDeg.toFloat()),
             )
             Text(
-                text = "${data.windSpeedMph}",
+                text = "${data.windSpeedKph}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )

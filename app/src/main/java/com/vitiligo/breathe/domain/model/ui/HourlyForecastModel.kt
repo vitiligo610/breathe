@@ -6,9 +6,9 @@ data class HourlyForecastData(
     val timeLabel: String,
     val aqi: Int,
     val aqiCategory: AqiCategory,
-    val weatherIcon: String,
+    val weatherCode: Int,
     val tempC: Double,
-    val windSpeedMph: Double,
+    val windSpeedKph: Double,
     val windSpeedDeg: Double,
     val humidityPercent: Double
 )

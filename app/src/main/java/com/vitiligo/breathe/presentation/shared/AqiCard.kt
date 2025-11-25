@@ -166,13 +166,13 @@ fun AqiCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             WeatherDetailItem(
-                iconRes = getWeatherIconRes(data.weatherIcon),
+                iconRes = getWeatherIconRes(data.weatherCode),
                 value = "${data.tempC.toInt()}°",
                 imageSize = 28.dp
             )
 
             WindDetailItem(
-                windSpeed = data.windSpeedMph,
+                windSpeed = data.windSpeedKph,
                 windDeg = data.windSpeedDeg,
             )
 
