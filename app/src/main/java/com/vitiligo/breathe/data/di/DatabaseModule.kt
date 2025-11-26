@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.vitiligo.breathe.data.local.room.AppDatabase
 import com.vitiligo.breathe.data.local.room.dao.AqiDataDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDao
+import com.vitiligo.breathe.data.local.room.dao.LocationSummaryDao
 import com.vitiligo.breathe.data.local.room.dao.SensorDataDao
 import com.vitiligo.breathe.data.local.room.dao.WeatherDataDao
 import dagger.Module
@@ -39,4 +40,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideSensorDataDao(database: AppDatabase): SensorDataDao = database.sensorDataDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationSummaryDao(database: AppDatabase): LocationSummaryDao = database.locationSummaryDao()
 }

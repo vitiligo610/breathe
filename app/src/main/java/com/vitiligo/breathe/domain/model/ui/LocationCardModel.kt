@@ -10,7 +10,7 @@ data class LocationCardData(
     val currentAqiCategory: AqiCategory,
     val currentTempC: Int,
     val currentWeatherCode: Int,
-    val dominantPollutant: String,
     val forecasts: List<ForecastDayData>,
-    val time: String
+    val time: String,
+    val utcOffsetSeconds: Int = 0
 )

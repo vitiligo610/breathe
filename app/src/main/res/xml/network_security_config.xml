@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    This configuration file allows cleartext traffic (HTTP) ONLY for the specific
+    private IP address used by your local backend (192.168.100.81).
+    All other domains will still enforce HTTPS, maintaining overall security.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Add the exact IP address of your local server -->
+        <domain includeSubdomains="true">192.168.100.81</domain>
+
+        <!-- Add any other local IPs if needed, e.g., <domain includeSubdomains="true">10.0.2.2</domain> for Android Emulator localhost -->
+    </domain-config>
+
+    <!-- Default configuration enforces security for all other connections -->
+    <base-config>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>

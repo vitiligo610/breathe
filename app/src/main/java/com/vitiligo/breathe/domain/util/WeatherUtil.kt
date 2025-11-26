@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import com.vitiligo.breathe.R
 
 @DrawableRes
-fun getWeatherIconRes(weatherCode: Int): Int {
+fun getWeatherIconRes(weatherCode: Int, utcOffsetSeconds: Int = 0): Int {
     return when (weatherCode) {
         // Clear Sky (WMO 0)
         0 -> R.drawable.ic_weather_clear_sky_full_32

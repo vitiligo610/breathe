@@ -5,6 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.vitiligo.breathe.domain.converter.AqiCategoryConverter
 import com.vitiligo.breathe.domain.model.AqiCategory
 
 @Entity(
@@ -19,6 +21,7 @@ import com.vitiligo.breathe.domain.model.AqiCategory
     ],
     indices = [Index(value = ["location_id"])]
 )
+@TypeConverters(AqiCategoryConverter::class)
 data class AqiData(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

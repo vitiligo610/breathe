@@ -9,6 +9,17 @@ import com.vitiligo.breathe.domain.model.AqiCategory
 import com.vitiligo.breathe.domain.model.Pollutant
 import com.vitiligo.breathe.domain.model.ui.HealthRec
 
+fun getAqiCategory(value: Int): AqiCategory {
+    return when {
+        value <= 50 -> AqiCategory.GREEN
+        value <= 100 -> AqiCategory.YELLOW
+        value <= 150 -> AqiCategory.ORANGE
+        value <= 200 -> AqiCategory.RED
+        value <= 300 -> AqiCategory.PURPLE
+        else -> AqiCategory.MAROON
+    }
+}
+
 fun getAqiCategoryLabel(category: AqiCategory): String {
     return when (category) {
         AqiCategory.GREEN -> "Good"

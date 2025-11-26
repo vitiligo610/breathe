@@ -13,7 +13,6 @@ val placeholderLocationCardData = listOf(
         currentAqiCategory = AqiCategory.YELLOW,
         currentTempC = 18,
         currentWeatherCode = 0,
-        dominantPollutant = "PM2.5",
         forecasts = listOf(
             ForecastDayData(
                 dayLabel = "Today",
@@ -50,7 +49,6 @@ val placeholderLocationCardData = listOf(
         currentAqiCategory = AqiCategory.ORANGE,
         currentTempC = 12,
         currentWeatherCode = 2,
-        dominantPollutant = "O3",
         forecasts = listOf(
             ForecastDayData(
                 dayLabel = "Today",
