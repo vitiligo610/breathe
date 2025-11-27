@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.data.remote
 
+import com.vitiligo.breathe.data.remote.model.LocationAirQualityHistoryResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateDetailsResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateSummaryResponse
 import retrofit2.http.GET
@@ -18,4 +19,10 @@ interface BreatheApi {
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double
     ): LocationClimateDetailsResponse
+
+    @GET("api/location/history")
+    suspend fun getLocationHistory(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double
+    ): LocationAirQualityHistoryResponse
 }

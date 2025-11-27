@@ -176,8 +176,7 @@ fun HistoryBarChart(
 
                 val barHeight = ((point.value / yAxisMax) * chartAreaHeight).toFloat() * animationProgress.value
 
-                val category = point.getCategory()
-                val baseColor = getAQICategoryColor(category)
+                val baseColor = getAQICategoryColor(point.category)
                 val isSelected = point == selectedPoint
                 val finalColor = if (isSelected) baseColor.darken() else baseColor
                 val yTop = chartAreaHeight - barHeight

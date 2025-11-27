@@ -7,6 +7,7 @@ import com.vitiligo.breathe.data.local.room.AppDatabase
 import com.vitiligo.breathe.data.local.room.dao.AqiDataDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDetailsDao
+import com.vitiligo.breathe.data.local.room.dao.LocationHistoryDao
 import com.vitiligo.breathe.data.local.room.dao.LocationSummaryDao
 import com.vitiligo.breathe.data.local.room.dao.SensorDataDao
 import com.vitiligo.breathe.data.local.room.dao.UserLocationDao
@@ -55,4 +56,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideLocationDetailsDao(database: AppDatabase): LocationDetailsDao = database.locationDetailsDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationHistoryDao(database: AppDatabase): LocationHistoryDao = database.locationHistoryDao()
 }

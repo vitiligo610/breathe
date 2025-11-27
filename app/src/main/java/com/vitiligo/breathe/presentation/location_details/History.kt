@@ -1,24 +1,23 @@
 package com.vitiligo.breathe.presentation.location_details
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vitiligo.breathe.data.placeholder.mockDailyHistoryData
-import com.vitiligo.breathe.data.placeholder.mockDailyHistoryTabOptions
-import com.vitiligo.breathe.data.placeholder.mockHourlyHistoryData
-import com.vitiligo.breathe.data.placeholder.mockHourlyHistoryTabOptions
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.vitiligo.breathe.domain.model.ui.HistoryPoint
 import com.vitiligo.breathe.domain.model.ui.HistoryTabOption
 import com.vitiligo.breathe.domain.model.ui.HistoryViewMode
@@ -41,42 +37,40 @@ import com.vitiligo.breathe.presentation.shared.DetailBox
 import com.vitiligo.breathe.presentation.shared.HistoryBarChart
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun History(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HistoryViewModel = hiltViewModel()
 ) {
-    var data by rememberSaveable { mutableStateOf(mockHourlyHistoryData) }
+    val state by viewModel.state.collectAsState()
 
     DetailBox(
         label = "History",
         modifier = modifier
     ) {
         HistoryContent(
-            data = data,
+            data = state.chartData,
             onTabSelectionChange = { viewMode, option ->
-                data = if (viewMode == HistoryViewMode.Hourly) {
-                    mockHourlyHistoryData
-                } else {
-                    mockDailyHistoryData
-                }
-            }
+                viewModel.setViewMode(viewMode)
+                viewModel.setSelectedTab(option)
+            },
+            hourlyHistoryTabOptions = state.hourlyTabs,
+            dailyHistoryTabOptions = state.dailyTabs
         )
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HistoryContent(
     modifier: Modifier = Modifier,
     data: List<HistoryPoint>,
     onTabSelectionChange: (HistoryViewMode, HistoryTabOption) -> Unit = { _, _ ->  },
-    hourlyHistoryTabOptions: List<HistoryTabOption> = mockHourlyHistoryTabOptions,
-    dailyHistoryTabOptions: List<HistoryTabOption> = mockDailyHistoryTabOptions,
+    hourlyHistoryTabOptions: List<HistoryTabOption>,
+    dailyHistoryTabOptions: List<HistoryTabOption>
 ) {
     var viewMode by rememberSaveable { mutableStateOf(HistoryViewMode.Hourly) }
-    var selectedHourlyHistoryTabOption by rememberSaveable { mutableStateOf(hourlyHistoryTabOptions[0]) }
-    var selectedDailyHistoryTabOption by rememberSaveable { mutableStateOf(dailyHistoryTabOptions[0]) }
+    var selectedHourlyHistoryTabOption by rememberSaveable { mutableStateOf(if (hourlyHistoryTabOptions.isNotEmpty()) hourlyHistoryTabOptions[0] else HistoryTabOption.AQI ) }
+    var selectedDailyHistoryTabOption by rememberSaveable { mutableStateOf(if (dailyHistoryTabOptions.isNotEmpty()) dailyHistoryTabOptions[0] else HistoryTabOption.AQI ) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -151,7 +145,6 @@ private fun HistoryContent(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HistoryChart(
     modifier: Modifier = Modifier,
@@ -237,13 +230,12 @@ private fun HistoryTabs(
     onTabSelected: (HistoryTabOption) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FlowRow(
+    LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
             .fillMaxWidth()
     ) {
-        entries.forEach { tab ->
+        items(entries) { tab ->
             val isSelected = tab == selectedTab
 
             FilterChip(
@@ -262,14 +254,13 @@ private fun HistoryTabs(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HistoryInfoHeader(
     point: HistoryPoint,
     viewMode: HistoryViewMode,
     selectedTabOption: HistoryTabOption
 ) {
-    val category = point.getCategory()
+    val category = point.category
 
     val dateText = if (viewMode == HistoryViewMode.Daily) {
         val dailyFormatter = DateTimeFormatter.ofPattern("EEE, MMMM dd")
