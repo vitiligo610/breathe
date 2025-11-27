@@ -26,15 +26,24 @@ class HomeViewModel @Inject constructor(
         _isRefreshing,
         _error
     ) { locations, isRefreshing, error ->
-            HomeUiState(
-                locations = locations,
-                isRefreshing = isRefreshing,
-                error = error
-            )
+            when {
+                locations != null -> {
+                    HomeUiState.Success(
+                        locations = locations,
+                        isRefreshing = isRefreshing,
+                    )
+                }
+                error != null -> {
+                    HomeUiState.Error(error)
+                }
+                else -> {
+                    HomeUiState.Loading
+                }
+            }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = HomeUiState(isRefreshing = true)
+            initialValue = HomeUiState.Loading
         )
 
     init {

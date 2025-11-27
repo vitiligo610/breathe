@@ -1,9 +1,7 @@
 package com.vitiligo.breathe.presentation.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -14,9 +12,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.vitiligo.breathe.domain.model.HomeTab
+import com.vitiligo.breathe.presentation.shared.ErrorState
+import com.vitiligo.breathe.presentation.shared.LoadingState
+import com.vitiligo.breathe.ui.home.HomeUiState
 import com.vitiligo.breathe.ui.home.HomeViewModel
 
 @Composable
@@ -44,14 +44,23 @@ fun HomeContent(
         }
 
 
-        when (tabs[selectedTabIndex]) {
-            HomeTab.GLOBAL -> GlobalTabContent(
-                navigateToLocationDetails = navigateToLocationDetails,
-                locations = state.locations,
-                onRefresh = viewModel::refreshData,
-                isRefreshing = state.isRefreshing
+        when (state) {
+            is HomeUiState.Loading -> LoadingState()
+            is HomeUiState.Error -> ErrorState(
+                errorMessage = (state as HomeUiState.Error).message
             )
-            HomeTab.MY_SENSORS -> MySensorsTabContent()
+            is HomeUiState.Success -> {
+                when (tabs[selectedTabIndex]) {
+                    HomeTab.GLOBAL -> GlobalTabContent(
+                        navigateToLocationDetails = navigateToLocationDetails,
+                        locations = (state as HomeUiState.Success).locations,
+                        onRefresh = viewModel::refreshData,
+                        isRefreshing = (state as HomeUiState.Success).isRefreshing
+                    )
+                    HomeTab.MY_SENSORS -> MySensorsTabContent()
+                }
+            }
         }
+
     }
 }
