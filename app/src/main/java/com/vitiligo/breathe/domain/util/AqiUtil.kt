@@ -168,6 +168,110 @@ fun getPollutantCategory(reading: Double): AqiCategory {
     }
 }
 
+fun getPollutantCategory(reading: Double, pollutantKey: String): AqiCategory {
+    val normalizedKey = pollutantKey.lowercase()
+
+    // Molecular weights for conversion (g/mol)
+    val O3_MW = 48.0
+    val NO2_MW = 46.0
+    val SO2_MW = 64.1
+    val CO_MW = 28.0
+
+    // Standard molar volume at 25°C, 1 atm is 24.45 L/mol.
+    // Conversion factor (ug/m³ to ppb) = (24.45 / MW)
+    // Conversion factor (ug/m³ to ppm) = (24.45 / (MW * 1000))
+
+    return when (normalizedKey) {
+        // PM2.5 (Fine Particulate Matter) - 24h avg - Unit: µg/m³ (No conversion needed)
+        "pm2_5" -> {
+            val value = reading // Value already in µg/m³
+            when {
+                value <= 12.0 -> AqiCategory.GREEN
+                value <= 35.5 -> AqiCategory.YELLOW
+                value <= 55.5 -> AqiCategory.ORANGE
+                value <= 150.5 -> AqiCategory.RED
+                value <= 250.5 -> AqiCategory.PURPLE
+                else -> AqiCategory.MAROON
+            }
+        }
+
+        // PM10 (Coarse Particulate Matter) - 24h avg - Unit: µg/m³ (No conversion needed)
+        "pm10" -> {
+            val value = reading // Value already in µg/m³
+            when {
+                value <= 55.0 -> AqiCategory.GREEN
+                value <= 155.0 -> AqiCategory.YELLOW
+                value <= 255.0 -> AqiCategory.ORANGE
+                value <= 355.0 -> AqiCategory.RED
+                value <= 425.0 -> AqiCategory.PURPLE
+                else -> AqiCategory.MAROON
+            }
+        }
+
+        // O3 (Ozone) - 8h avg - Unit: ppb (Conversion: µg/m³ to ppb)
+        // Conversion Factor: 24.45 / 48.0 ≈ 0.509
+        "o3" -> {
+            val value = reading * (24.45 / O3_MW)
+            when {
+                value <= 55.0 -> AqiCategory.GREEN
+                value <= 70.0 -> AqiCategory.YELLOW
+                value <= 85.0 -> AqiCategory.ORANGE
+                value <= 105.0 -> AqiCategory.RED
+                value <= 200.0 -> AqiCategory.PURPLE // Used 200 based on the table's next category start (205)
+                else -> AqiCategory.MAROON
+            }
+        }
+
+        // NO2 (Nitrogen Dioxide) - 1h avg - Unit: ppb (Conversion: µg/m³ to ppb)
+        // Conversion Factor: 24.45 / 46.0 ≈ 0.531
+        "no2" -> {
+            val value = reading * (24.45 / NO2_MW)
+            when {
+                value <= 54.0 -> AqiCategory.GREEN
+                value <= 100.0 -> AqiCategory.YELLOW
+                value <= 360.0 -> AqiCategory.ORANGE
+                value <= 650.0 -> AqiCategory.RED
+                value <= 1250.0 -> AqiCategory.PURPLE
+                else -> AqiCategory.MAROON
+            }
+        }
+
+        // SO2 (Sulfur Dioxide) - 24h avg - Unit: ppb (Conversion: µg/m³ to ppb)
+        // Note: Using 24h avg breakpoints as 1h avg range in table is incomplete.
+        // Conversion Factor: 24.45 / 64.1 ≈ 0.381
+        "so2" -> {
+            val value = reading * (24.45 / SO2_MW)
+            when {
+                // The table only lists thresholds for Very Unhealthy (305 ppb) and Hazardous (605 ppb) for 24h.
+                // We'll use the most common GREEN/YELLOW/ORANGE thresholds (approx. 35/75/185 ppb) for completeness
+                // but strictly apply the table's high-end values.
+                value <= 35.0 -> AqiCategory.GREEN
+                value <= 75.0 -> AqiCategory.YELLOW
+                value <= 185.0 -> AqiCategory.ORANGE
+                value <= 305.0 -> AqiCategory.RED
+                value <= 605.0 -> AqiCategory.PURPLE
+                else -> AqiCategory.MAROON
+            }
+        }
+
+        // CO (Carbon Monoxide) - 8h avg - Unit: ppm (Conversion: µg/m³ to ppm)
+        // Conversion Factor: 24.45 / (28.0 * 1000) ≈ 0.000873
+        "co" -> {
+            val value = reading * (24.45 / (CO_MW * 1000.0))
+            when {
+                value <= 4.5 -> AqiCategory.GREEN
+                value <= 9.5 -> AqiCategory.YELLOW
+                value <= 12.5 -> AqiCategory.ORANGE
+                value <= 15.5 -> AqiCategory.RED
+                value <= 30.5 -> AqiCategory.PURPLE
+                else -> AqiCategory.MAROON
+            }
+        }
+
+        else -> getPollutantCategory(reading)
+    }
+}
+
 fun getPollutantDetails(key: String, reading: Double, unit: String = "µg/m³"): Pollutant {
     return Pollutant(
         key = key,
@@ -175,7 +279,7 @@ fun getPollutantDetails(key: String, reading: Double, unit: String = "µg/m³"):
         description = getPollutantDescription(key),
         reading = reading,
         unit = unit,
-        category = getPollutantCategory(reading)
+        category = getPollutantCategory(reading, key)
     )
 }
 

@@ -1,6 +1,5 @@
 package com.vitiligo.breathe.data.mapper
 
-import android.util.Log
 import com.vitiligo.breathe.data.local.entity.DailyForecast
 import com.vitiligo.breathe.data.local.entity.LocationSummary
 import com.vitiligo.breathe.data.local.entity.UserLocation

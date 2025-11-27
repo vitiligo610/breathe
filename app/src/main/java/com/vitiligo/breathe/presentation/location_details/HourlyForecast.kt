@@ -30,20 +30,21 @@ import com.vitiligo.breathe.presentation.shared.DetailBox
 
 @Composable
 fun HourlyForecast(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: List<HourlyForecastData> = mockHourlyForecastData
 ) {
     DetailBox(
         label = "Hourly forecast",
         modifier = modifier
     ) {
-        HourlyForecastContent()
+        HourlyForecastContent(hourlyData = data)
     }
 }
 
 @Composable
 private fun HourlyForecastContent(
     modifier: Modifier = Modifier,
-    hourlyData: List<HourlyForecastData> = mockHourlyForecastData,
+    hourlyData: List<HourlyForecastData>,
 ) {
     LazyRow(
         modifier = modifier
@@ -126,7 +127,7 @@ private fun HourlyForecastItem(
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "mph",
+                text = "km/h",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -21,20 +21,21 @@ import com.vitiligo.breathe.presentation.shared.DetailBox
 
 @Composable
 fun HealthRecommendations(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    aqiCategory: AqiCategory = AqiCategory.ORANGE,
 ) {
     DetailBox(
         label = "Health recommendations",
         modifier = modifier
     ) {
-        HealthRecommendationsContent()
+        HealthRecommendationsContent(aqiCategory = aqiCategory)
     }
 }
 
 @Composable
 private fun HealthRecommendationsContent(
     modifier: Modifier = Modifier,
-    aqiCategory: AqiCategory = AqiCategory.ORANGE
+    aqiCategory: AqiCategory
 ) {
     val recs = getHealthRecommendations(category = aqiCategory)
 

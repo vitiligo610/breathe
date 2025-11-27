@@ -2,11 +2,14 @@ package com.vitiligo.breathe.data.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
 import com.vitiligo.breathe.data.local.room.AppDatabase
 import com.vitiligo.breathe.data.local.room.dao.AqiDataDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDao
+import com.vitiligo.breathe.data.local.room.dao.LocationDetailsDao
 import com.vitiligo.breathe.data.local.room.dao.LocationSummaryDao
 import com.vitiligo.breathe.data.local.room.dao.SensorDataDao
+import com.vitiligo.breathe.data.local.room.dao.UserLocationDao
 import com.vitiligo.breathe.data.local.room.dao.WeatherDataDao
 import dagger.Module
 import dagger.Provides
@@ -43,5 +46,13 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideUserLocationDao(database: AppDatabase): UserLocationDao = database.userLocationDao()
+
+    @Provides
+    @Singleton
     fun provideLocationSummaryDao(database: AppDatabase): LocationSummaryDao = database.locationSummaryDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationDetailsDao(database: AppDatabase): LocationDetailsDao = database.locationDetailsDao()
 }

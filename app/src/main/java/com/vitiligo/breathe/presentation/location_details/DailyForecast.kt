@@ -33,7 +33,8 @@ import com.vitiligo.breathe.presentation.shared.DetailBox
 
 @Composable
 fun DailyForecast(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: List<ForecastDayDataExtended> = mockDailyForecastData
 ) {
     var selectedCount by rememberSaveable { mutableIntStateOf(3) }
 
@@ -48,6 +49,7 @@ fun DailyForecast(
         modifier = modifier
     ) {
        DailyForecastContent(
+           data = data,
            selectedCount = selectedCount,
            modifier = Modifier
                .padding(vertical = 6.dp)
@@ -59,7 +61,7 @@ fun DailyForecast(
 private fun DailyForecastContent(
     modifier: Modifier = Modifier,
     selectedCount: Int = 3,
-    data: List<ForecastDayDataExtended> = mockDailyForecastData
+    data: List<ForecastDayDataExtended>
 ) {
     val items = data.take(selectedCount)
     val rowHeight = 28.dp
@@ -144,7 +146,7 @@ private fun DailyForecastContent(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(1.dp),
                             modifier = Modifier
-                                .width(60.dp)
+                                .width(70.dp)
                         ) {
                             Text(
                                 text = "${it.windSpeedKph}",
@@ -152,7 +154,7 @@ private fun DailyForecastContent(
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                text = "mph",
+                                text = "km/h",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -225,11 +227,11 @@ private fun DaysSelector(
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "7d",
+            text = "5d",
             style = MaterialTheme.typography.labelLarge,
-            fontWeight = if (selectedCount == 7) FontWeight.SemiBold else FontWeight.Normal,
+            fontWeight = if (selectedCount == 5) FontWeight.SemiBold else FontWeight.Normal,
             modifier = Modifier
-                .clickable { onCountSelect(7) }
+                .clickable { onCountSelect(5) }
         )
     }
 }

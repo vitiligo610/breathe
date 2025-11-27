@@ -140,13 +140,13 @@ fun AqiCard(
                     fontWeight = FontWeight.Light
                 )
                 Text(
-                    text = data.mainPollutant,
+                    text = data.dominantPollutant,
                     color = onAqiColor,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "${data.mainPollutantConcentration} ${data.mainPollutantConcentrationUnit}",
+                    text = "${data.dominantPollutantValue} ${data.dominantPollutantUnit}",
                     color = onAqiColor,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
@@ -229,7 +229,7 @@ private fun WindDetailItem(
                 .rotate(windDeg.toFloat())
         )
         Text(
-            text = "$windSpeed mph",
+            text = "$windSpeed km/h",
             style = MaterialTheme.typography.bodyLarge,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface

@@ -8,15 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.vitiligo.breathe.domain.model.AqiCategory
 import com.vitiligo.breathe.domain.util.getAqiScoreColor
+import com.vitiligo.breathe.domain.util.getAqiCategoryColor
 
 @Composable
 fun AqiCategoryIndicator(
-    aqiScore: Int,
     modifier: Modifier = Modifier,
+    aqiScore: Int = 0,
+    aqiCategory: AqiCategory? = null,
     radius: Dp = 4.dp
 ) {
-    val color = getAqiScoreColor(aqiScore)
+    val color = if (aqiCategory != null) getAqiCategoryColor(aqiCategory) else getAqiScoreColor(aqiScore)
 
     Box(
         modifier = modifier

@@ -31,19 +31,20 @@ import com.vitiligo.breathe.presentation.shared.DetailBox
 @Composable
 fun AirPollutants(
     modifier: Modifier = Modifier,
+    data: List<Pollutant> = mockAirPollutantsData
 ) {
     DetailBox(
         label = "Air Pollutants",
         modifier = modifier
     ) {
-        AirPollutantsContent()
+        AirPollutantsContent(pollutants = data)
     }
 }
 
 @Composable
 private fun AirPollutantsContent(
     modifier: Modifier = Modifier,
-    pollutants: List<Pollutant> = mockAirPollutantsData
+    pollutants: List<Pollutant>
 ) {
     val rowCount = (pollutants.size + 1) / 2
     val gridHeight = (rowCount * 86 + 0.coerceAtLeast(rowCount - 1) * 8).dp
@@ -92,7 +93,7 @@ private fun AirPollutantCard(
                 .padding(top = 2.dp)
         ) {
             AqiCategoryIndicator(
-                aqiScore = pollutant.reading.toInt(),
+                aqiCategory = pollutant.category,
                 modifier = Modifier
                     .padding(end = 2.dp)
             )

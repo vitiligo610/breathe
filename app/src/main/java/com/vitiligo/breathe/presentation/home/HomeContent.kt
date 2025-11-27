@@ -30,7 +30,9 @@ fun HomeContent(
     var selectedTabIndex by remember { mutableIntStateOf(HomeTab.GLOBAL.ordinal) }
     val tabs = HomeTab.entries.toTypedArray()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
         PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
             tabs.forEachIndexed { index, tab ->
                 Tab(
@@ -41,20 +43,15 @@ fun HomeContent(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 16.dp)
-        ) {
-            when (tabs[selectedTabIndex]) {
-                HomeTab.GLOBAL -> GlobalTabContent(
-                    navigateToLocationDetails = navigateToLocationDetails,
-                    locations = state.locations,
-                    onRefresh = viewModel::refreshData,
-                    isRefreshing = state.isRefreshing
-                )
-                HomeTab.MY_SENSORS -> MySensorsTabContent()
-            }
+
+        when (tabs[selectedTabIndex]) {
+            HomeTab.GLOBAL -> GlobalTabContent(
+                navigateToLocationDetails = navigateToLocationDetails,
+                locations = state.locations,
+                onRefresh = viewModel::refreshData,
+                isRefreshing = state.isRefreshing
+            )
+            HomeTab.MY_SENSORS -> MySensorsTabContent()
         }
     }
 }

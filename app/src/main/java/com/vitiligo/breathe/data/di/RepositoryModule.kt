@@ -1,6 +1,8 @@
 package com.vitiligo.breathe.data.di
 
+import com.vitiligo.breathe.data.repository.LocationDetailsRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationSummaryRepositoryImpl
+import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
 import com.vitiligo.breathe.domain.repository.LocationSummaryRepository
 import dagger.Binds
 import dagger.Module
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindLocationSummaryRepository(
         locationSummaryRepositoryImpl: LocationSummaryRepositoryImpl
     ): LocationSummaryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocationDetailsRepository(
+        locationDetailsRepositoryImpl: LocationDetailsRepositoryImpl
+    ): LocationDetailsRepository
 }
