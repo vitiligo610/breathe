@@ -15,11 +15,11 @@ class LocationAirQualityHistoryResponse : BaseLocationResponse() {
 
 data class HistoryForecast(
     val time: List<Long>? = null,
-    val aqi: List<Int>? = null,
-    @SerializedName("pm2_5") val pm2_5: List<Double>? = null,
-    @SerializedName("pm10") val pm10: List<Double>? = null,
-    val o3: List<Double>? = null,
-    val co: List<Double>? = null,
-    val no2: List<Double>? = null,
-    val so2: List<Double>? = null
+    val aqi: List<Int?>? = null,
+    @SerializedName("pm2_5") val pm2_5: List<Double?>? = null,
+    @SerializedName("pm10") val pm10: List<Double?>? = null,
+    val o3: List<Double?>? = null,
+    val co: List<Double?>? = null,
+    val no2: List<Double?>? = null,
+    val so2: List<Double?>? = null
 )

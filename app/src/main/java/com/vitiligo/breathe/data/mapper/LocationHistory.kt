@@ -40,13 +40,13 @@ fun HistoryForecast.extractPoints(
 ): List<HistoryPoint> {
     val times = this.time ?: return emptyList()
     val values: List<Double> = when (option) {
-        HistoryTabOption.AQI -> this.aqi?.map { it.toDouble() }
-        HistoryTabOption.PM2_5 -> this.pm2_5
-        HistoryTabOption.PM10 -> this.pm10
-        HistoryTabOption.O3 -> this.o3
-        HistoryTabOption.NO2 -> this.no2
-        HistoryTabOption.SO2 -> this.so2
-        HistoryTabOption.CO -> this.co
+        HistoryTabOption.AQI -> this.aqi?.filterNotNull()?.map { it.toDouble() }
+        HistoryTabOption.PM2_5 -> this.pm2_5?.filterNotNull()
+        HistoryTabOption.PM10 -> this.pm10?.filterNotNull()
+        HistoryTabOption.O3 -> this.o3?.filterNotNull()
+        HistoryTabOption.NO2 -> this.no2?.filterNotNull()
+        HistoryTabOption.SO2 -> this.so2?.filterNotNull()
+        HistoryTabOption.CO -> this.co?.filterNotNull()
     } ?: return emptyList()
 
     val size = minOf(times.size, values.size)
