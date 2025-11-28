@@ -4,6 +4,7 @@ import com.vitiligo.breathe.data.local.entity.DailyForecast
 import com.vitiligo.breathe.data.local.entity.LocationSummary
 import com.vitiligo.breathe.data.local.entity.UserLocation
 import com.vitiligo.breathe.data.local.relation.LocationWithSummary
+import com.vitiligo.breathe.data.remote.model.BaseLocationResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateSummaryResponse
 import com.vitiligo.breathe.domain.model.ui.ForecastDayData
 import com.vitiligo.breathe.domain.model.ui.LocationCardData
@@ -14,7 +15,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
 
-fun LocationClimateSummaryResponse.toUserLocation(): UserLocation {
+fun BaseLocationResponse.toUserLocation(): UserLocation {
     return UserLocation(
         name = name ?: "Unknown",
         country = country ?: "",

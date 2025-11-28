@@ -35,7 +35,7 @@ val redPrimary = Color(0xFFF04438)
 fun ReadingMetCard(
     modifier: Modifier = Modifier,
     pollutant: String = "PM2.5",
-    threshold: Double = 10.0,
+    threshold: Double = 5.0,
     reading: Double = 219.5,
 ) {
     val times = reading / threshold

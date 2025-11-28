@@ -1,48 +1,45 @@
 package com.vitiligo.breathe.data.repository
 
-import android.util.Log
-import com.vitiligo.breathe.data.local.room.dao.LocationDetailsDao
+import com.vitiligo.breathe.data.local.relation.LocationWithHistory
+import com.vitiligo.breathe.data.local.room.dao.LocationHistoryDao
 import com.vitiligo.breathe.data.local.room.dao.UserLocationDao
-import com.vitiligo.breathe.data.mapper.toDetailsEntity
-import com.vitiligo.breathe.data.mapper.toDomainModel
+import com.vitiligo.breathe.data.mapper.toHistoryEntity
+import com.vitiligo.breathe.data.mapper.toUserLocation
 import com.vitiligo.breathe.data.remote.BreatheApi
-import com.vitiligo.breathe.data.remote.model.BaseLocationResponse
 import com.vitiligo.breathe.domain.model.Coordinates
-import com.vitiligo.breathe.domain.model.ui.LocationDetailsData
-import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
+import com.vitiligo.breathe.domain.repository.LocationHistoryRepository
 import com.vitiligo.breathe.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class LocationDetailsRepositoryImpl @Inject constructor(
+class LocationHistoryRepositoryImpl @Inject constructor(
     private val api: BreatheApi,
-    private val detailsDao: LocationDetailsDao,
+    private val historyDao: LocationHistoryDao,
     private val userLocationDao: UserLocationDao
-) : LocationDetailsRepository {
+) : LocationHistoryRepository {
 
-    private val _previewData = MutableStateFlow<LocationDetailsData?>(null)
+    private val _previewData = MutableStateFlow<LocationWithHistory?>(null)
 
-    override fun getLocationDetails(locationId: Int?, coordinates: Coordinates?): Flow<LocationDetailsData?> {
+    override fun getLocationHistory(locationId: Int?, coordinates: Coordinates?): Flow<LocationWithHistory?> {
         return when {
             locationId != null -> {
-                detailsDao.getLocationDetailsWithLocation(locationId).map { relation ->
-                    relation?.toDomainModel()
-                }
+                historyDao.getLocationWithHistory(locationId)
             }
             coordinates != null -> {
                 _previewData.asStateFlow()
             }
-            else -> flowOf(null)
+            else -> {
+                flowOf(null)
+            }
         }
     }
 
-    override suspend fun refreshLocationDetails(locationId: Int?, coordinates: Coordinates?): Resource<Unit> {
+    override suspend fun refreshHistory(locationId: Int?, coordinates: Coordinates?): Resource<Unit> {
         return withContext(Dispatchers.IO) {
             try {
                 val targetLat: Double
@@ -61,22 +58,25 @@ class LocationDetailsRepositoryImpl @Inject constructor(
                     return@withContext Resource.Error("No location ID or coordinates provided")
                 }
 
-                val response = api.getLocationDetails(targetLat, targetLng)
+                val response = api.getLocationHistory(targetLat, targetLng)
 
-                Log.d("LocationDetailsRepo", "Response utc offset is ${response.utcOffsetSeconds}, name: ${response.name}, lat: ${response.latitude}, long: ${response.longitude}")
                 if (locationId != null) {
-                    val detailsEntity = response.toDetailsEntity(locationId)
-                    detailsDao.insertLocationDetails(detailsEntity)
+                    val historyEntity = response.toHistoryEntity(locationId)
+                    historyDao.insertLocationHistory(historyEntity)
                     _previewData.emit(null)
                 } else {
-                    val domainModel = response.toDomainModel()
-                    _previewData.emit(domainModel)
+                    _previewData.emit(
+                        LocationWithHistory(
+                            location = response.toUserLocation(),
+                            history = response.toHistoryEntity(-1)
+                        )
+                    )
                 }
 
                 Resource.Success(Unit)
             } catch (e: Exception) {
                 e.printStackTrace()
-                Resource.Error("Failed to refresh details: ${e.localizedMessage}")
+                Resource.Error(e.localizedMessage ?: "Failed to fetch history")
             }
         }
     }

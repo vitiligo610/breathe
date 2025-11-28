@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,5 +13,8 @@ data class UserLocation(
     val name: String,
     val country: String,
     val timezone: String,
-    val utcOffsetSeconds: Int
+    val utcOffsetSeconds: Int,
+
+    @ColumnInfo(name = "name_id")
+    val placeId: String? = null
 )

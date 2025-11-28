@@ -2,11 +2,12 @@ package com.vitiligo.breathe.data.remote.interceptor
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor(): Interceptor {
+class AuthInterceptor @Inject constructor(
+    private val tenantSecret: String
+): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val tenantSecret = "sk_main_df31bfd012ae4252b1fe5eea9907e300f5a85ba43dfe4704a3803f13aa04ac8a"
-
         val originalRequest = chain.request()
         val newRequest = originalRequest.newBuilder()
             .addHeader("X-Tenant-Secret", tenantSecret)

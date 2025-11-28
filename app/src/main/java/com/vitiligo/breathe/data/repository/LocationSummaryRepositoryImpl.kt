@@ -1,11 +1,11 @@
 package com.vitiligo.breathe.data.repository
 
-import android.util.Log
 import com.vitiligo.breathe.data.local.entity.UserLocation
 import com.vitiligo.breathe.data.local.room.dao.LocationSummaryDao
 import com.vitiligo.breathe.data.mapper.toDomainModel
 import com.vitiligo.breathe.data.mapper.toSummaryEntity
 import com.vitiligo.breathe.data.remote.BreatheApi
+import com.vitiligo.breathe.domain.model.Coordinates
 import com.vitiligo.breathe.domain.model.ui.LocationCardData
 import com.vitiligo.breathe.domain.repository.LocationSummaryRepository
 import com.vitiligo.breathe.domain.util.Resource
@@ -87,9 +87,12 @@ class LocationSummaryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addLocation(latitude: Double, longitude: Double): Resource<Unit> {
+    override suspend fun addLocation(coordinates: Coordinates, placeId: String): Resource<Unit> {
         return withContext(Dispatchers.IO) {
             try {
+                val latitude = coordinates.latitude
+                val longitude = coordinates.longitude
+
                 val dto = api.getLocationSummary(latitude, longitude)
 
                 val locationEntity = UserLocation(
@@ -98,7 +101,8 @@ class LocationSummaryRepositoryImpl @Inject constructor(
                     name = dto.name ?: "Unknown",
                     country = dto.country ?: "",
                     timezone = dto.timezone ?: "UTC",
-                    utcOffsetSeconds = dto.utcOffsetSeconds ?: 0
+                    utcOffsetSeconds = dto.utcOffsetSeconds ?: 0,
+                    placeId = placeId
                 )
 
                 val newId = dao.insertUserLocation(locationEntity)

@@ -6,17 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.vitiligo.breathe.domain.model.navigation.Home
+import com.vitiligo.breathe.domain.model.navigation.LocationDetails
+import com.vitiligo.breathe.domain.model.navigation.LocationSearch
 import com.vitiligo.breathe.ui.home.HomeScreen
 import com.vitiligo.breathe.ui.location_details.LocationDetailsScreen
-import kotlinx.serialization.Serializable
-
-@Serializable
-object Home
-
-@Serializable
-data class LocationDetails(
-    val id: Int
-)
+import com.vitiligo.breathe.ui.search.LocationSearchScreen
 
 @Composable
 fun BreatheNavHost(
@@ -32,13 +27,28 @@ fun BreatheNavHost(
     ) {
         composable<Home> {
             HomeScreen(
-                navigateToLocationDetails = { navController.navigate(LocationDetails(it)) }
+                navigateToLocationDetails = { navController.navigate(LocationDetails(it)) },
+                navigateToLocationSearch = { navController.navigate(LocationSearch) }
             )
         }
 
         composable<LocationDetails> {
             LocationDetailsScreen(
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                navigateToHome = {
+                    navController.popBackStack(Home, inclusive = false)
+                }
+            )
+        }
+
+        composable<LocationSearch> {
+            LocationSearchScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToLocationDetailsPreview = { latitude, longitude, placeId ->
+                    navController.navigate(
+                        LocationDetails(coordinates = "$latitude,$longitude", placeId = placeId)
+                    )
+                }
             )
         }
     }

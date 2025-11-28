@@ -2,9 +2,11 @@ package com.vitiligo.breathe.data.di
 
 import com.vitiligo.breathe.data.repository.LocationDetailsRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationHistoryRepositoryImpl
+import com.vitiligo.breathe.data.repository.LocationSearchRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationSummaryRepositoryImpl
 import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
 import com.vitiligo.breathe.domain.repository.LocationHistoryRepository
+import com.vitiligo.breathe.domain.repository.LocationSearchRepository
 import com.vitiligo.breathe.domain.repository.LocationSummaryRepository
 import dagger.Binds
 import dagger.Module
@@ -33,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindLocationHistoryRepository(
         locationHistoryRepositoryImpl: LocationHistoryRepositoryImpl
     ): LocationHistoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocationSearchRepository(
+        locationSearchRepositoryImpl: LocationSearchRepositoryImpl
+    ): LocationSearchRepository
 }

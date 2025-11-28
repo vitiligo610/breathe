@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vitiligo.breathe.presentation.shared.AqiCard
 import com.vitiligo.breathe.presentation.shared.RefreshBox
+import com.vitiligo.breathe.presentation.shared.RightAlignedAddButton
 import com.vitiligo.breathe.ui.location_details.LocationDetailsUiState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -24,7 +26,8 @@ fun LocationDetailsContent(
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
     isRefreshing: Boolean = false,
-    onRefresh: () -> Unit = { }
+    onRefresh: () -> Unit = { },
+    onAddLocation: () -> Unit = { }
 ) {
     RefreshBox(
         isRefreshing = isRefreshing,
@@ -36,6 +39,14 @@ fun LocationDetailsContent(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
         ) {
+            if (!uiState.data.locationAdded) {
+                item {
+                    RightAlignedAddButton(
+                        onClick = onAddLocation
+                    )
+                }
+            }
+
             item {
                 LocationDetailsHeading(
                     title = uiState.data.locationName,

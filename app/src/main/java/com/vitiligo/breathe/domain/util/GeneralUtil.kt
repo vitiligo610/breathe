@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
+import com.vitiligo.breathe.domain.model.Coordinates
 
 fun Color.darken(factor: Float = 0.8f): Color {
     val argb = this.toArgb()
@@ -51,3 +52,27 @@ fun Modifier.shadowWithClipIntersect(
         }
     }
     .shadow(elevation, shape, clip, ambientColor, spotColor)
+
+fun String.toCoordinates(): Coordinates {
+    val values = this.split(",")
+
+    if (values.size != 2) {
+        throw IllegalArgumentException(
+            "Invalid coordinates format: Expected 'lat,lon', but found ${values.size} components in '$this'"
+        )
+    }
+
+    val latString = values[0].trim()
+    val lonString = values[1].trim()
+
+    val latitude = latString.toDoubleOrNull()
+        ?: throw IllegalArgumentException("Invalid latitude value: '$latString' is not a valid number.")
+
+    val longitude = lonString.toDoubleOrNull()
+        ?: throw IllegalArgumentException("Invalid longitude value: '$lonString' is not a valid number.")
+
+    return Coordinates(
+        latitude = latitude,
+        longitude = longitude
+    )
+}

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -13,6 +15,11 @@ android {
         version = release(36)
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.vitiligo.breathe"
         minSdk = 26
@@ -21,6 +28,24 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+
+        buildConfigField(
+            "String",
+            "TENANT_SECRET_TOKEN",
+            properties.getProperty("TENANT_SECRET_TOKEN", "")
+        )
+
+        buildConfigField(
+            "String",
+            "LOCATION_IQ_API_KEY",
+            properties.getProperty("LOCATION_IQ_API_KEY", "")
+        )
     }
 
     buildTypes {

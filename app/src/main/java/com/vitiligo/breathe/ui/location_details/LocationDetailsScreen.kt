@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.ui.location_details
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -15,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -28,12 +30,14 @@ import com.vitiligo.breathe.presentation.shared.LoadingState
 @Composable
 fun LocationDetailsScreen(
     navigateBack: () -> Unit,
+    navigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LocationDetailsViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val lazyListState = rememberLazyListState()
     val density = LocalDensity.current
+    val context = LocalContext.current
 
     val uiState by viewModel.state.collectAsState()
 
@@ -67,6 +71,12 @@ fun LocationDetailsScreen(
                     lazyListState = lazyListState,
                     isRefreshing = (uiState as LocationDetailsUiState.Success).isRefreshing,
                     onRefresh = viewModel::refresh,
+                    onAddLocation = {
+                        viewModel.addLocation {
+                            navigateToHome()
+                            Toast.makeText(context, "Location added successfully!", Toast.LENGTH_SHORT).show()
+                        }
+                    },
                     modifier = Modifier
                         .padding(it)
                         .padding(horizontal = 16.dp, vertical = 8.dp)

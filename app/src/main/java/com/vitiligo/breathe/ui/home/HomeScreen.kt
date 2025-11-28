@@ -10,10 +10,11 @@ import com.vitiligo.breathe.presentation.home.HomeTopBar
 @Composable
 fun HomeScreen(
     navigateToLocationDetails: (Int) -> Unit,
+    navigateToLocationSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = { HomeTopBar() },
+        topBar = { HomeTopBar(navigateToLocationSearch) },
         modifier = modifier
     ) {
         HomeContent(

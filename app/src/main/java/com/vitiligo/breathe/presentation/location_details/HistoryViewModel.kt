@@ -11,7 +11,8 @@ import com.vitiligo.breathe.domain.model.ui.HistoryTabOption
 import com.vitiligo.breathe.domain.model.ui.HistoryViewMode
 import com.vitiligo.breathe.domain.repository.LocationHistoryRepository
 import com.vitiligo.breathe.domain.util.Resource
-import com.vitiligo.breathe.ui.navigation.LocationDetails
+import com.vitiligo.breathe.domain.model.navigation.LocationDetails
+import com.vitiligo.breathe.domain.util.toCoordinates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,7 +29,8 @@ class HistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<LocationDetails>()
-    private val locationId: Int = checkNotNull(route.id)
+    private val locationId = route.id
+    private val coordinates = route.coordinates
 
     private val _viewMode = MutableStateFlow(HistoryViewMode.Hourly)
     private val _selectedTab = MutableStateFlow(HistoryTabOption.AQI)
@@ -36,7 +38,7 @@ class HistoryViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
 
     val state: StateFlow<HistoryUiState> = combine(
-        repository.getLocationHistory(locationId),
+        repository.getLocationHistory(locationId, coordinates?.toCoordinates()),
         _viewMode,
         _selectedTab,
         _isLoading,
@@ -82,7 +84,7 @@ class HistoryViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isLoading.value = true
-            val result = repository.refreshHistory(locationId)
+            val result = repository.refreshHistory(locationId, coordinates?.toCoordinates())
             if (result is Resource.Error) {
                 _error.value = result.message
             }

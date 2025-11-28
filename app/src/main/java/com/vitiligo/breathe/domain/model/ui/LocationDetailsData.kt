@@ -8,5 +8,6 @@ data class LocationDetailsData(
     val aqiCardData: AqiCardData,
     val hourlyForecasts: List<HourlyForecastData>,
     val dailyForecasts: List<ForecastDayDataExtended>,
-    val pollutants: List<Pollutant>
+    val pollutants: List<Pollutant>,
+    val locationAdded: Boolean = false
 )

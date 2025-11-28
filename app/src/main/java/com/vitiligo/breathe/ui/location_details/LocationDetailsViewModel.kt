@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
 import com.vitiligo.breathe.domain.util.Resource
-import com.vitiligo.breathe.ui.navigation.LocationDetails
+import com.vitiligo.breathe.domain.model.navigation.LocationDetails
+import com.vitiligo.breathe.domain.repository.LocationSummaryRepository
+import com.vitiligo.breathe.domain.util.toCoordinates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,17 +21,19 @@ import javax.inject.Inject
 @HiltViewModel
 class LocationDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: LocationDetailsRepository
+    private val summaryRepository: LocationSummaryRepository,
+    private val detailsRepository: LocationDetailsRepository
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<LocationDetails>()
-    private val locationId: Int = checkNotNull(route.id)
+    private val locationId = route.id
+    private val coordinates = route.coordinates
 
     private val _isRefreshing = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
     val state: StateFlow<LocationDetailsUiState> = combine(
-        repository.getLocationDetails(locationId),
+        detailsRepository.getLocationDetails(locationId, coordinates?.toCoordinates()),
         _isRefreshing,
         _error
     ) { data, isRefreshing, error ->
@@ -62,13 +66,24 @@ class LocationDetailsViewModel @Inject constructor(
             _isRefreshing.value = true
             _error.value = null
 
-            val result = repository.refreshLocationDetails(locationId)
+            val result = detailsRepository.refreshLocationDetails(locationId, coordinates?.toCoordinates())
 
             if (result is Resource.Error) {
                 _error.value = result.message
             }
 
             _isRefreshing.value = false
+        }
+    }
+
+    fun addLocation(callback: (() -> Unit)?) {
+        val safeCoordinates = checkNotNull(coordinates).toCoordinates()
+        val placeId = checkNotNull(route.placeId)
+
+        viewModelScope.launch {
+            summaryRepository.addLocation(safeCoordinates, placeId)
+
+            callback?.invoke()
         }
     }
 }

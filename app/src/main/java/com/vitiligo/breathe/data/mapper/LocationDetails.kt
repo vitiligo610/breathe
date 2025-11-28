@@ -68,6 +68,47 @@ fun LocationWithDetails.toDomainModel(): LocationDetailsData? {
         aqiCardData = aqiCard,
         hourlyForecasts = hourly,
         dailyForecasts = daily,
+        pollutants = pollutants,
+        locationAdded = location.placeId != null
+    )
+}
+
+fun LocationClimateDetailsResponse.toDomainModel(): LocationDetailsData {
+    val weather = this.weather ?: LocationWeatherData()
+    val aqi = this.airQuality ?: LocationAirQualityData()
+    val offset = this.utcOffsetSeconds ?: 0
+
+    val localTime = Instant.now()
+        .atZone(ZoneOffset.ofTotalSeconds(offset))
+        .format(DateTimeFormatter.ofPattern("HH:mm"))
+
+    val pollutants = mapPollutants(aqi.current)
+
+    val dominant = "PM2.5"
+    val dominantVal = aqi.current?.pm2_5 ?: 0.0
+
+    val currentAqiVal = aqi.current?.aqi ?: 0
+    val aqiCard = AqiCardData(
+        aqi = currentAqiVal,
+        category = getAqiCategory(currentAqiVal),
+        dominantPollutant = dominant,
+        dominantPollutantValue = dominantVal,
+        tempC = weather.current?.temperature ?: 0.0,
+        weatherCode = weather.current?.weatherCode ?: 0,
+        windSpeedKph = weather.current?.windSpeed ?: 0.0,
+        windSpeedDeg = weather.current?.windDirection?.toDouble() ?: 0.0,
+        humidityPercent = weather.current?.humidity ?: 0.0
+    )
+
+    val hourly = mapHourlyForecast(weather.hourly, aqi.hourly, offset)
+    val daily = mapDailyForecast(weather.daily, aqi.daily, offset)
+
+    return LocationDetailsData(
+        locationName = this.name ?: "Unknown Location",
+        localTime = localTime,
+        aqiCardData = aqiCard,
+        hourlyForecasts = hourly,
+        dailyForecasts = daily,
         pollutants = pollutants
     )
 }
