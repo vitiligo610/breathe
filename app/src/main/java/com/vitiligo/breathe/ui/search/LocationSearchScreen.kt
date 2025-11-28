@@ -34,7 +34,10 @@ fun LocationSearchScreen(
                 query = state.query,
                 onQueryChange = viewModel::onQueryChange,
                 onNavigateBack = navigateBack,
-                focusRequester = focusRequester
+                focusRequester = focusRequester,
+                navigateToLocation = { latitude, longitude ->
+                    navigateToLocationDetailsPreview(latitude, longitude, "$latitude,$longitude")
+                }
             )
         }
     ) { padding ->
