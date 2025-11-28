@@ -19,6 +19,7 @@ fun HomeScreen(
     ) {
         HomeContent(
             navigateToLocationDetails = navigateToLocationDetails,
+            navigateToLocationSearch = navigateToLocationSearch,
             modifier = Modifier
                 .padding(it)
         )

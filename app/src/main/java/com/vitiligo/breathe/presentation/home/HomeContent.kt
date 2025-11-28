@@ -22,6 +22,7 @@ import com.vitiligo.breathe.ui.home.HomeViewModel
 @Composable
 fun HomeContent(
     navigateToLocationDetails: (Int) -> Unit,
+    navigateToLocationSearch: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -53,6 +54,7 @@ fun HomeContent(
                 when (tabs[selectedTabIndex]) {
                     HomeTab.GLOBAL -> GlobalTabContent(
                         navigateToLocationDetails = navigateToLocationDetails,
+                        navigateToLocationSearch = navigateToLocationSearch,
                         locations = (state as HomeUiState.Success).locations,
                         onRefresh = viewModel::refreshData,
                         isRefreshing = (state as HomeUiState.Success).isRefreshing

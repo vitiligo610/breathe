@@ -19,6 +19,7 @@ import com.vitiligo.breathe.ui.theme.BreatheTheme
 @Composable
 fun GlobalTabContent(
     navigateToLocationDetails: (Int) -> Unit,
+    navigateToLocationSearch: () -> Unit,
     modifier: Modifier = Modifier,
     locations: List<LocationCardData> = placeholderLocationCardData,
     isRefreshing: Boolean = false,
@@ -29,22 +30,28 @@ fun GlobalTabContent(
         onRefresh = onRefresh,
         modifier = modifier
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item { Spacer(modifier = Modifier.height(0.dp)) }
+        if (locations.isEmpty()) {
+            EmptyLocationList(
+                onSearchLocationsClick = navigateToLocationSearch
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item { Spacer(modifier = Modifier.height(0.dp)) }
 
-            items(locations) { location ->
-                LocationCard(
-                    data = location,
-                    modifier = Modifier
-                        .clickable { navigateToLocationDetails(location.id) }
-                )
+                items(locations) { location ->
+                    LocationCard(
+                        data = location,
+                        modifier = Modifier
+                            .clickable { navigateToLocationDetails(location.id) }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(0.dp)) }
             }
-
-            item { Spacer(modifier = Modifier.height(0.dp)) }
         }
     }
 }
@@ -54,7 +61,8 @@ fun GlobalTabContent(
 private fun GlobalTabContentPreview() {
     BreatheTheme {
         GlobalTabContent(
-            navigateToLocationDetails = { }
+            navigateToLocationDetails = { },
+            navigateToLocationSearch = { }
         )
     }
 }

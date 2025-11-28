@@ -33,34 +33,7 @@ class LocationSummaryRepositoryImpl @Inject constructor(
     override suspend fun refreshData(): Resource<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                var userLocations = summaryDao.getAllUserLocations()
-
-                if (userLocations.isEmpty()) {
-                    val defaultLocations = listOf(
-                        // Karachi
-                        UserLocation(
-                            latitude = 24.8607, longitude = 67.0011,
-                            name = "Karachi", country = "Pakistan",
-                            timezone = "Asia/Karachi", utcOffsetSeconds = 18000
-                        ),
-                        // Lahore
-                        UserLocation(
-                            latitude = 31.5204, longitude = 74.3587,
-                            name = "Lahore", country = "Pakistan",
-                            timezone = "Asia/Karachi", utcOffsetSeconds = 18000
-                        ),
-                        // Islamabad
-                        UserLocation(
-                            latitude = 33.6844, longitude = 73.0479,
-                            name = "Islamabad", country = "Pakistan",
-                            timezone = "Asia/Karachi", utcOffsetSeconds = 18000
-                        )
-                    )
-
-                    defaultLocations.forEach { summaryDao.insertUserLocation(it) }
-
-                    userLocations = summaryDao.getAllUserLocations()
-                }
+                val userLocations = summaryDao.getAllUserLocations()
 
                 val deferredSummaries = userLocations.map { location ->
                     async {
