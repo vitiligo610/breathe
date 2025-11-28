@@ -2,7 +2,9 @@ package com.vitiligo.breathe.data.local.room
 
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.RenameColumn
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 import com.vitiligo.breathe.data.local.entity.AqiData
 import com.vitiligo.breathe.data.local.entity.Location
 import com.vitiligo.breathe.data.local.entity.LocationDetails
@@ -31,15 +33,23 @@ import com.vitiligo.breathe.data.local.room.dao.WeatherDataDao
         LocationDetails::class,
         LocationHistory::class
     ],
-    version = 4,
+    version = AppDatabase.LATEST_VERSION,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4)
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(
+            from = 4, to = 5,
+            spec = AppDatabase.RenameColumnMigration::class
+        )
     ],
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
+
+    companion object {
+        const val LATEST_VERSION = 5
+    }
 
     abstract fun locationDao(): LocationDao
     abstract fun aqiDataDao(): AqiDataDao
@@ -49,4 +59,11 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun locationSummaryDao(): LocationSummaryDao
     abstract fun locationDetailsDao(): LocationDetailsDao
     abstract fun locationHistoryDao(): LocationHistoryDao
+
+    @RenameColumn(
+        tableName = "user_locations",
+        fromColumnName = "name_id",
+        toColumnName = "place_id"
+    )
+    class RenameColumnMigration: AutoMigrationSpec
 }

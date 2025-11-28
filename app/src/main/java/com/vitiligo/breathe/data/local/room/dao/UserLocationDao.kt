@@ -12,6 +12,9 @@ interface UserLocationDao {
     @Query("SELECT * FROM user_locations WHERE id = :locationId")
     suspend fun getLocationById(locationId: Int): UserLocation?
 
+    @Query("SELECT * FROM user_locations WHERE place_id = :placeId")
+    suspend fun getLocationByPlaceId(placeId: String): UserLocation?
+
     @Query("SELECT * FROM user_locations")
     suspend fun getAllUserLocations(): List<UserLocation>
 
@@ -20,4 +23,7 @@ interface UserLocationDao {
 
     @Query("DELETE FROM user_locations WHERE id = :locationId")
     suspend fun deleteUserLocationById(locationId: Int)
+
+    @Query("DELETE FROM user_locations WHERE place_id = :placeId")
+    suspend fun deleteUserLocationByPlaceId(placeId: String)
 }

@@ -16,6 +16,10 @@ interface LocationDetailsDao {
     @Query("SELECT * FROM user_locations WHERE id = :locationId")
     fun getLocationDetailsWithLocation(locationId: Int): Flow<LocationWithDetails?>
 
+    @Transaction
+    @Query("SELECT * FROM user_locations WHERE place_id = :placeId")
+    fun getLocationDetailsWithLocationByPlaceId(placeId: String): Flow<LocationWithDetails?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocationDetails(details: LocationDetails)
 

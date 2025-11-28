@@ -1,12 +1,10 @@
 package com.vitiligo.breathe.data.repository
 
-import android.util.Log
 import com.vitiligo.breathe.data.local.room.dao.LocationDetailsDao
 import com.vitiligo.breathe.data.local.room.dao.UserLocationDao
 import com.vitiligo.breathe.data.mapper.toDetailsEntity
 import com.vitiligo.breathe.data.mapper.toDomainModel
 import com.vitiligo.breathe.data.remote.BreatheApi
-import com.vitiligo.breathe.data.remote.model.BaseLocationResponse
 import com.vitiligo.breathe.domain.model.Coordinates
 import com.vitiligo.breathe.domain.model.ui.LocationDetailsData
 import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
@@ -15,6 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -28,17 +28,30 @@ class LocationDetailsRepositoryImpl @Inject constructor(
 
     private val _previewData = MutableStateFlow<LocationDetailsData?>(null)
 
-    override fun getLocationDetails(locationId: Int?, coordinates: Coordinates?): Flow<LocationDetailsData?> {
-        return when {
-            locationId != null -> {
-                detailsDao.getLocationDetailsWithLocation(locationId).map { relation ->
-                    relation?.toDomainModel()
+    override fun getLocationDetails(locationId: Int?, coordinates: Coordinates?, placeId: String?): Flow<LocationDetailsData?> {
+        return flow {
+            var lId = locationId
+
+            if (placeId != null && lId == null) {
+                val location = userLocationDao.getLocationByPlaceId(placeId)
+                if (location != null) {
+                    lId = location.id
                 }
             }
-            coordinates != null -> {
-                _previewData.asStateFlow()
+
+            val targetFlow: Flow<LocationDetailsData?> = when {
+                lId != null -> {
+                    detailsDao.getLocationDetailsWithLocation(lId).map { relation ->
+                        relation?.toDomainModel()
+                    }
+                }
+                coordinates != null -> {
+                    _previewData.asStateFlow()
+                }
+                else -> flowOf(null)
             }
-            else -> flowOf(null)
+
+            emitAll(targetFlow)
         }
     }
 
@@ -63,7 +76,6 @@ class LocationDetailsRepositoryImpl @Inject constructor(
 
                 val response = api.getLocationDetails(targetLat, targetLng)
 
-                Log.d("LocationDetailsRepo", "Response utc offset is ${response.utcOffsetSeconds}, name: ${response.name}, lat: ${response.latitude}, long: ${response.longitude}")
                 if (locationId != null) {
                     val detailsEntity = response.toDetailsEntity(locationId)
                     detailsDao.insertLocationDetails(detailsEntity)

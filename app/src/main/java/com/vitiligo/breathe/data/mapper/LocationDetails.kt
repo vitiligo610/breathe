@@ -63,6 +63,7 @@ fun LocationWithDetails.toDomainModel(): LocationDetailsData? {
     val daily = mapDailyForecast(weather.daily, aqi.daily, offset)
 
     return LocationDetailsData(
+        placeId = location.placeId ?: "",
         locationName = location.name,
         localTime = localTime,
         aqiCardData = aqiCard,
@@ -104,12 +105,14 @@ fun LocationClimateDetailsResponse.toDomainModel(): LocationDetailsData {
     val daily = mapDailyForecast(weather.daily, aqi.daily, offset)
 
     return LocationDetailsData(
+        placeId = "",
         locationName = this.name ?: "Unknown Location",
         localTime = localTime,
         aqiCardData = aqiCard,
         hourlyForecasts = hourly,
         dailyForecasts = daily,
-        pollutants = pollutants
+        pollutants = pollutants,
+        locationAdded = false
     )
 }
 

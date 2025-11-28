@@ -11,4 +11,5 @@ interface LocationSummaryRepository {
     suspend fun refreshData(): Resource<Unit>
     suspend fun addLocation(coordinates: Coordinates, placeId: String): Resource<Unit>
     suspend fun removeLocation(id: Int)
+    suspend fun removeLocationByPlaceId(placeId: String)
 }

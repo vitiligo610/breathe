@@ -9,5 +9,6 @@ data class LocationDetailsData(
     val hourlyForecasts: List<HourlyForecastData>,
     val dailyForecasts: List<ForecastDayDataExtended>,
     val pollutants: List<Pollutant>,
-    val locationAdded: Boolean = false
+    val placeId: String,
+    val locationAdded: Boolean = false,
 )

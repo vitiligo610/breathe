@@ -2,9 +2,15 @@ package com.vitiligo.breathe.data.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "user_locations")
+@Entity(
+    tableName = "user_locations",
+    indices = [
+        Index(value = ["id", "place_id"], unique = true)
+    ]
+)
 data class UserLocation(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -15,6 +21,6 @@ data class UserLocation(
     val timezone: String,
     val utcOffsetSeconds: Int,
 
-    @ColumnInfo(name = "name_id")
+    @ColumnInfo(name = "place_id")
     val placeId: String? = null
 )

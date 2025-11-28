@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocationDetailsRepository {
 
-    fun getLocationDetails(locationId: Int?, coordinates: Coordinates?): Flow<LocationDetailsData?>
+    fun getLocationDetails(locationId: Int?, coordinates: Coordinates?, placeId: String?): Flow<LocationDetailsData?>
 
     suspend fun refreshLocationDetails(locationId: Int?, coordinates: Coordinates?): Resource<Unit>
 }

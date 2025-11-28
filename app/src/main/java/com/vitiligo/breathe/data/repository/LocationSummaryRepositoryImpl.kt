@@ -97,4 +97,8 @@ class LocationSummaryRepositoryImpl @Inject constructor(
     override suspend fun removeLocation(id: Int) {
         locationDao.deleteUserLocationById(id)
     }
+
+    override suspend fun removeLocationByPlaceId(placeId: String) {
+        locationDao.deleteUserLocationByPlaceId(placeId)
+    }
 }

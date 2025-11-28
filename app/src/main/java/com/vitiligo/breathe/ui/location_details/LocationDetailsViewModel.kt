@@ -28,12 +28,13 @@ class LocationDetailsViewModel @Inject constructor(
     private val route = savedStateHandle.toRoute<LocationDetails>()
     private val locationId = route.id
     private val coordinates = route.coordinates
+    private val placeId = route.placeId
 
     private val _isRefreshing = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
     val state: StateFlow<LocationDetailsUiState> = combine(
-        detailsRepository.getLocationDetails(locationId, coordinates?.toCoordinates()),
+        detailsRepository.getLocationDetails(locationId, coordinates?.toCoordinates(), placeId),
         _isRefreshing,
         _error
     ) { data, isRefreshing, error ->
@@ -88,12 +89,14 @@ class LocationDetailsViewModel @Inject constructor(
     }
 
     fun removeLocation(callback: (() -> Unit)?) {
-        val safeLocationId = checkNotNull(locationId)
+        val placeId = if (state.value is LocationDetailsUiState.Success) (state.value as LocationDetailsUiState.Success).data.placeId else null
 
-        viewModelScope.launch {
-            summaryRepository.removeLocation(safeLocationId)
+        if (placeId != null) {
+            viewModelScope.launch {
+                summaryRepository.removeLocationByPlaceId(placeId)
+            }
+
+            callback?.invoke()
         }
-
-        callback?.invoke()
     }
 }
