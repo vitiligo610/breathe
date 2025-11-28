@@ -86,4 +86,14 @@ class LocationDetailsViewModel @Inject constructor(
             callback?.invoke()
         }
     }
+
+    fun removeLocation(callback: (() -> Unit)?) {
+        val safeLocationId = checkNotNull(locationId)
+
+        viewModelScope.launch {
+            summaryRepository.removeLocation(safeLocationId)
+        }
+
+        callback?.invoke()
+    }
 }

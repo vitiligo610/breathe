@@ -17,4 +17,7 @@ interface UserLocationDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertUserLocation(location: UserLocation): Long
+
+    @Query("DELETE FROM user_locations WHERE id = :locationId")
+    suspend fun deleteUserLocationById(locationId: Int)
 }

@@ -2,6 +2,7 @@ package com.vitiligo.breathe.data.repository
 
 import com.vitiligo.breathe.data.local.entity.UserLocation
 import com.vitiligo.breathe.data.local.room.dao.LocationSummaryDao
+import com.vitiligo.breathe.data.local.room.dao.UserLocationDao
 import com.vitiligo.breathe.data.mapper.toDomainModel
 import com.vitiligo.breathe.data.mapper.toSummaryEntity
 import com.vitiligo.breathe.data.remote.BreatheApi
@@ -19,11 +20,12 @@ import javax.inject.Inject
 
 class LocationSummaryRepositoryImpl @Inject constructor(
     private val api: BreatheApi,
-    private val dao: LocationSummaryDao
+    private val locationDao: UserLocationDao,
+    private val summaryDao: LocationSummaryDao
 ) : LocationSummaryRepository {
 
     override fun getSavedLocations(): Flow<List<LocationCardData>> {
-        return dao.getLocationsWithSummary().map { entities ->
+        return summaryDao.getLocationsWithSummary().map { entities ->
             entities.map { it.toDomainModel() }
         }
     }
@@ -31,7 +33,7 @@ class LocationSummaryRepositoryImpl @Inject constructor(
     override suspend fun refreshData(): Resource<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                var userLocations = dao.getAllUserLocations()
+                var userLocations = summaryDao.getAllUserLocations()
 
                 if (userLocations.isEmpty()) {
                     val defaultLocations = listOf(
@@ -55,9 +57,9 @@ class LocationSummaryRepositoryImpl @Inject constructor(
                         )
                     )
 
-                    defaultLocations.forEach { dao.insertUserLocation(it) }
+                    defaultLocations.forEach { summaryDao.insertUserLocation(it) }
 
-                    userLocations = dao.getAllUserLocations()
+                    userLocations = summaryDao.getAllUserLocations()
                 }
 
                 val deferredSummaries = userLocations.map { location ->
@@ -76,7 +78,7 @@ class LocationSummaryRepositoryImpl @Inject constructor(
                 val newSummaries = resultsWithNulls.filterNotNull()
 
                 if (newSummaries.isNotEmpty()) {
-                    dao.updateSummaries(newSummaries)
+                    summaryDao.updateSummaries(newSummaries)
                 }
 
                 Resource.Success(Unit)
@@ -105,11 +107,11 @@ class LocationSummaryRepositoryImpl @Inject constructor(
                     placeId = placeId
                 )
 
-                val newId = dao.insertUserLocation(locationEntity)
+                val newId = summaryDao.insertUserLocation(locationEntity)
 
                 if (newId != -1L) {
                     val summaryEntity = dto.toSummaryEntity(parentId = newId.toInt())
-                    dao.insertLocationSummary(summaryEntity)
+                    summaryDao.insertLocationSummary(summaryEntity)
                 }
 
                 Resource.Success(Unit)
@@ -120,6 +122,6 @@ class LocationSummaryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeLocation(id: Int) {
-        // Implement deletion logic in DAO if needed
+        locationDao.deleteUserLocationById(id)
     }
 }

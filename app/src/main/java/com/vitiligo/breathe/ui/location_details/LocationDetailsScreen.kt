@@ -56,7 +56,15 @@ fun LocationDetailsScreen(
             topBar = {
                 LocationDetailsTopBar(
                     navigateBack = navigateBack,
-                    scrollBehavior = scrollBehavior
+                    scrollBehavior = scrollBehavior,
+                    actionsDisabled = uiState !is LocationDetailsUiState.Success,
+                    hideDeleteOption = !((uiState as? LocationDetailsUiState.Success)?.data?.locationAdded ?: false),
+                    onDeleteLocation = {
+                        viewModel.removeLocation {
+                            navigateToHome()
+                            Toast.makeText(context, "Location removed successfully!", Toast.LENGTH_SHORT).show()
+                        }
+                    },
                 )
             }
         ) {
