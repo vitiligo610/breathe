@@ -3,8 +3,9 @@ package com.vitiligo.breathe.domain.util
 import com.vitiligo.breathe.domain.model.health.AlertSeverity
 import com.vitiligo.breathe.domain.model.health.HealthGuidance
 import com.vitiligo.breathe.domain.model.health.HealthProfile
+import jakarta.inject.Inject
 
-class HealthGuidanceEngine {
+class HealthGuidanceEngine @Inject constructor() {
 
     fun analyze(
         currentAqi: Int,

@@ -1,6 +1,7 @@
 package com.vitiligo.breathe.data.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -29,6 +30,8 @@ class DataSyncWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        Log.d("DataSyncWorker", "Starting data sync")
+
         try {
             val locations = alertDao.getLocationsWithSettings()
 
@@ -71,9 +74,11 @@ class DataSyncWorker @AssistedInject constructor(
                 }
             }
 
+            Log.d("DataSyncWorker", "Data sync completed successfully")
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.e("DataSyncWorker", "Data sync failed: ${e.message}")
             Result.retry()
         }
     }

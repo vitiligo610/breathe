@@ -6,7 +6,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.vitiligo.breathe.data.local.entity.LocationAlertSettings
+import com.vitiligo.breathe.data.local.entity.UserLocation
 import com.vitiligo.breathe.data.local.relation.LocationWithAlertSettings
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocationAlertDao {
@@ -23,4 +25,10 @@ interface LocationAlertDao {
     @Transaction
     @Query("SELECT * FROM user_locations")
     suspend fun getLocationsWithSettings(): List<LocationWithAlertSettings>
+
+    @Query("SELECT * FROM user_locations")
+    fun getAllUserLocationsFlow(): Flow<List<UserLocation>>
+
+    @Query("SELECT * FROM location_alert_settings")
+    fun getAllAlertSettingsFlow(): Flow<List<LocationAlertSettings>>
 }

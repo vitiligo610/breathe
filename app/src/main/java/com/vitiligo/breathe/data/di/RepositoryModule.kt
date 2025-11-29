@@ -8,6 +8,7 @@ import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
 import com.vitiligo.breathe.domain.repository.LocationHistoryRepository
 import com.vitiligo.breathe.domain.repository.LocationSearchRepository
 import com.vitiligo.breathe.domain.repository.LocationSummaryRepository
+import com.vitiligo.breathe.domain.util.HealthGuidanceEngine
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

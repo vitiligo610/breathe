@@ -10,7 +10,7 @@ data class LocationWithAlertSettings(
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "locationId"
+        entityColumn = "location_id"
     )
     val settings: LocationAlertSettings?
 )

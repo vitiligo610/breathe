@@ -14,9 +14,11 @@ import javax.inject.Singleton
 
 @Singleton
 class WorkScheduler @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @ApplicationContext context: Context
 ) {
     private val HOURLY_SYNC_WORK_NAME = "HourlyDataSyncWork"
+
+    private val workManager = WorkManager.getInstance(context)
 
     fun scheduleHourlySync() {
         val constraints = Constraints.Builder()
@@ -32,7 +34,7 @@ class WorkScheduler @Inject constructor(
             .setConstraints(constraints)
             .build()
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        workManager.enqueueUniquePeriodicWork(
             HOURLY_SYNC_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             hourlySyncRequest
@@ -40,6 +42,6 @@ class WorkScheduler @Inject constructor(
     }
 
     fun cancelHourlySync() {
-        WorkManager.getInstance(context).cancelUniqueWork(HOURLY_SYNC_WORK_NAME)
+        workManager.cancelUniqueWork(HOURLY_SYNC_WORK_NAME)
     }
 }
