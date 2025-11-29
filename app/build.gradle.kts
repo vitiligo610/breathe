@@ -100,6 +100,7 @@ dependencies {
     implementation(libs.squareup.retrofit2.converter.gson)
     implementation(libs.squareup.okhttp3.logging.interceptor)
     implementation(libs.android.gms.play.services.location)
+    implementation(kotlin("reflect"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

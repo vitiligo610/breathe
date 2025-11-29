@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
-import com.vitiligo.breathe.ui.navigation.BreatheNavHost
+import com.vitiligo.breathe.ui.navigation.BreatheScaffold
 import com.vitiligo.breathe.ui.theme.BreatheTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BreatheTheme {
-                BreatheNavHost(
+                BreatheScaffold(
                     navController = rememberNavController(),
                 )
             }

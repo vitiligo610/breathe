@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
 import com.vitiligo.breathe.domain.util.Resource
-import com.vitiligo.breathe.domain.model.navigation.LocationDetails
+import com.vitiligo.breathe.domain.model.navigation.Screen
 import com.vitiligo.breathe.domain.repository.LocationSummaryRepository
 import com.vitiligo.breathe.domain.util.toCoordinates
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,10 +25,10 @@ class LocationDetailsViewModel @Inject constructor(
     private val detailsRepository: LocationDetailsRepository
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<LocationDetails>()
-    private val locationId = route.id
-    private val coordinates = route.coordinates
-    private val placeId = route.placeId
+    private val screen = savedStateHandle.toRoute<Screen.LocationDetails>()
+    private val locationId = screen.id
+    private val coordinates = screen.coordinates
+    private val placeId = screen.placeId
 
     private val _isRefreshing = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
@@ -79,7 +79,7 @@ class LocationDetailsViewModel @Inject constructor(
 
     fun addLocation(callback: (() -> Unit)?) {
         val safeCoordinates = checkNotNull(coordinates).toCoordinates()
-        val placeId = checkNotNull(route.placeId)
+        val placeId = checkNotNull(screen.placeId)
 
         viewModelScope.launch {
             summaryRepository.addLocation(safeCoordinates, placeId)

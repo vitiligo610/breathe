@@ -11,7 +11,7 @@ import com.vitiligo.breathe.domain.model.ui.HistoryTabOption
 import com.vitiligo.breathe.domain.model.ui.HistoryViewMode
 import com.vitiligo.breathe.domain.repository.LocationHistoryRepository
 import com.vitiligo.breathe.domain.util.Resource
-import com.vitiligo.breathe.domain.model.navigation.LocationDetails
+import com.vitiligo.breathe.domain.model.navigation.Screen
 import com.vitiligo.breathe.domain.util.toCoordinates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +28,9 @@ class HistoryViewModel @Inject constructor(
     private val repository: LocationHistoryRepository
 ) : ViewModel() {
 
-    private val route = savedStateHandle.toRoute<LocationDetails>()
-    private val locationId = route.id
-    private val coordinates = route.coordinates
+    private val screen = savedStateHandle.toRoute<Screen.LocationDetails>()
+    private val locationId = screen.id
+    private val coordinates = screen.coordinates
 
     private val _viewMode = MutableStateFlow(HistoryViewMode.Hourly)
     private val _selectedTab = MutableStateFlow(HistoryTabOption.AQI)
