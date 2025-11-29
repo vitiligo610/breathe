@@ -2,6 +2,8 @@ package com.vitiligo.breathe.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -23,10 +25,46 @@ fun BreatheNavHost(
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
-        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
+        enterTransition = {
+            if (isBottomNavSwitch(initialState.destination.route, targetState.destination.route)) {
+                fadeIn(animationSpec = tween(500))
+            } else {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(500)
+                ) + fadeIn(animationSpec = tween(500))
+            }
+        },
+        exitTransition = {
+            if (isBottomNavSwitch(initialState.destination.route, targetState.destination.route)) {
+                fadeOut(animationSpec = tween(500))
+            } else {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(500)
+                ) + fadeOut(animationSpec = tween(500))
+            }
+        },
+        popEnterTransition = {
+            if (isBottomNavSwitch(initialState.destination.route, targetState.destination.route)) {
+                fadeIn(animationSpec = tween(500))
+            } else {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(500)
+                ) + fadeIn(animationSpec = tween(500))
+            }
+        },
+        popExitTransition = {
+            if (isBottomNavSwitch(initialState.destination.route, targetState.destination.route)) {
+                fadeOut(animationSpec = tween(500))
+            } else {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(500)
+                ) + fadeOut(animationSpec = tween(500))
+            }
+        },
         modifier = modifier
     ) {
         composable<Screen.Home> {
@@ -64,4 +102,19 @@ fun BreatheNavHost(
             HealthScreen()
         }
     }
+}
+
+private fun isBottomNavSwitch(initialRoute: String?, targetRoute: String?): Boolean {
+    if (initialRoute == null || targetRoute == null) return false
+
+    val bottomNavRoutes = listOf(
+        Screen.Home::class.qualifiedName,
+        Screen.Map::class.qualifiedName,
+        Screen.Health::class.qualifiedName
+    )
+
+    val isInitialBottom = bottomNavRoutes.any { initialRoute.contains(it ?: "Unknown") }
+    val isTargetBottom = bottomNavRoutes.any { targetRoute.contains(it ?: "Unknown") }
+
+    return isInitialBottom && isTargetBottom
 }

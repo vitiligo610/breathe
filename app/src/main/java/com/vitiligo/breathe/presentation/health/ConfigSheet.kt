@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChildCare
@@ -48,7 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vitiligo.breathe.domain.model.health.HealthProfile
 import com.vitiligo.breathe.domain.model.health.LocationLabel
-import com.vitiligo.breathe.ui.health.HealthZoneUiModel
+import com.vitiligo.breathe.domain.model.ui.HealthZoneUiModel
 
 @Composable
 fun ConfigureZoneSheetContent(
@@ -56,12 +57,10 @@ fun ConfigureZoneSheetContent(
     onSave: (LocationLabel, HealthProfile, Boolean, Long) -> Unit,
     onCancel: () -> Unit
 ) {
-    // Local state for the form
     var selectedLabel by remember { mutableStateOf(zone.settings?.label ?: LocationLabel.HOME) }
     var selectedProfile by remember { mutableStateOf(zone.settings?.healthProfile ?: HealthProfile.GENERAL) }
     var notificationsEnabled by remember { mutableStateOf(zone.settings?.isNotificationEnabled ?: true) }
 
-    // Slider state for Interval (Minutes) - Default 60 (1 hour)
     var intervalSliderPos by remember { mutableFloatStateOf(zone.settings?.minNotificationIntervalMinutes?.toFloat() ?: 60f) }
 
     Column(
@@ -71,7 +70,6 @@ fun ConfigureZoneSheetContent(
             .padding(bottom = 32.dp), // Safe area
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // Header
         Text(
             text = "Configure Zone: ${zone.location.name}",
             style = MaterialTheme.typography.headlineSmall,
@@ -80,7 +78,6 @@ fun ConfigureZoneSheetContent(
 
         HorizontalDivider()
 
-        // 1. Label Section
         Column {
             Text("Label", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(8.dp))
@@ -96,7 +93,6 @@ fun ConfigureZoneSheetContent(
             }
         }
 
-        // 2. Health Profile Section
         Column {
             Text("Health Profile", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
             Text(
@@ -116,7 +112,6 @@ fun ConfigureZoneSheetContent(
             }
         }
 
-        // 3. Alert Frequency
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -146,7 +141,6 @@ fun ConfigureZoneSheetContent(
             }
         }
 
-        // Actions
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -163,8 +157,6 @@ fun ConfigureZoneSheetContent(
         }
     }
 }
-
-// --- Helper UI Components ---
 
 @Composable
 fun SelectableChip(
@@ -230,7 +222,6 @@ fun SelectableProfileCard(
     }
 }
 
-// Icon Mappers
 fun getIconForLabel(label: LocationLabel): ImageVector {
     return when (label) {
         LocationLabel.HOME -> Icons.Default.Home
@@ -244,11 +235,11 @@ fun getIconForLabel(label: LocationLabel): ImageVector {
 fun getIconForProfile(profile: HealthProfile): ImageVector {
     return when (profile) {
         HealthProfile.GENERAL -> Icons.Default.Person
-        HealthProfile.ASTHMA -> Icons.Default.MedicalServices // Lungs metaphor
+        HealthProfile.ASTHMA -> Icons.Default.MedicalServices
         HealthProfile.COPD -> Icons.Default.MedicalServices
         HealthProfile.ELDERLY -> Icons.Default.Elderly
         HealthProfile.CHILD -> Icons.Default.ChildCare
         HealthProfile.PREGNANCY -> Icons.Default.PregnantWoman
-        HealthProfile.ATHLETE -> Icons.Default.DirectionsRun
+        HealthProfile.ATHLETE -> Icons.AutoMirrored.Filled.DirectionsRun
     }
 }

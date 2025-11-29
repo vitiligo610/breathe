@@ -3,13 +3,11 @@ package com.vitiligo.breathe.ui.health
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vitiligo.breathe.data.local.entity.LocationAlertSettings
-import com.vitiligo.breathe.data.local.entity.UserLocation
 import com.vitiligo.breathe.data.local.room.dao.LocationAlertDao
-import com.vitiligo.breathe.data.local.room.dao.LocationSummaryDao
 import com.vitiligo.breathe.domain.model.health.HealthProfile
 import com.vitiligo.breathe.domain.model.health.LocationLabel
+import com.vitiligo.breathe.domain.model.ui.HealthZoneUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,23 +15,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class HealthZoneUiModel(
-    val location: UserLocation,
-    val settings: LocationAlertSettings?
-)
-
-data class HealthScreenUiState(
-    val zones: List<HealthZoneUiModel> = emptyList(),
-    val isLoading: Boolean = false
-)
-
 @HiltViewModel
 class HealthViewModel @Inject constructor(
     private val dao: LocationAlertDao
 ) : ViewModel() {
 
-    // SSOT: We combine raw locations with raw settings to build the UI model
-    // Note: Ideally, use a Repository. Using DAO directly here for brevity/speed as per request.
     private val _locationsFlow = dao.getAllUserLocationsFlow()
     private val _settingsFlow = dao.getAllAlertSettingsFlow()
 
@@ -65,7 +51,7 @@ class HealthViewModel @Inject constructor(
             val currentSettings = state.value.zones.find { it.location.id == locationId }?.settings
 
             val newSettings = LocationAlertSettings(
-                id = currentSettings?.id ?: 0, // 0 = AutoGenerate new ID
+                id = currentSettings?.id ?: 0,
                 locationId = locationId,
                 label = label,
                 healthProfile = profile,
