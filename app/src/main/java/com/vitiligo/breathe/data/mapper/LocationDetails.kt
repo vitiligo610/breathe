@@ -19,7 +19,6 @@ import com.vitiligo.breathe.domain.util.getPollutantDetails
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 fun LocationClimateDetailsResponse.toDetailsEntity(locationId: Int): LocationDetails {
     return LocationDetails(
@@ -135,6 +134,7 @@ private fun mapHourlyForecast(
     offset: Int
 ): List<HourlyForecastData> {
     val times = wHourly?.time ?: return emptyList()
+
     val size = minOf(
         times.size,
         wHourly.temperature?.size ?: 0,
@@ -142,12 +142,10 @@ private fun mapHourlyForecast(
     )
 
     val result = mutableListOf<HourlyForecastData>()
-    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    val dateTimeMapper = LocalDateTimeMapper(offset)
 
     for (i in 0 until size) {
-        val timeLabel = Instant.ofEpochSecond(times[i])
-            .atZone(ZoneOffset.ofTotalSeconds(offset))
-            .format(formatter)
+        val timeLabel = dateTimeMapper.mapHourlyLabel(times[i])
 
         val aqiVal = aHourly?.aqi?.getOrNull(i) ?: 0
 
@@ -175,12 +173,10 @@ private fun mapDailyForecast(
     val size = minOf(times.size, aDaily?.aqi?.size ?: 0)
 
     val result = mutableListOf<ForecastDayDataExtended>()
-    val formatter = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
+    val dateTimeMapper = LocalDateTimeMapper(offset)
 
     for (i in 0 until size) {
-        val dayLabel = Instant.ofEpochSecond(times[i])
-            .atZone(ZoneOffset.ofTotalSeconds(offset))
-            .format(formatter)
+        val dayLabel = dateTimeMapper.mapDailyLabel(times[i])
 
         val aqiVal = aDaily?.aqi?.getOrNull(i) ?: 0
 

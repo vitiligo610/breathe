@@ -12,7 +12,6 @@ import com.vitiligo.breathe.domain.util.getAqiCategory
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlin.math.roundToInt
 
 fun BaseLocationResponse.toUserLocation(): UserLocation {
@@ -49,7 +48,6 @@ fun LocationWithSummary.toDomainModel(): LocationCardData {
     val loc = this.location
     val sum = this.summary
 
-    // Handle case where summary might be null (not fetched yet)
     val domainForecasts = sum?.dailyForecasts?.map {
         ForecastDayData(
             dayLabel = it.dayLabel,
@@ -95,15 +93,12 @@ private fun mapForecastsToEntityData(
     val result = mutableListOf<DailyForecast>()
 
     val size = minOf(times.size, aqis.size, codes?.size ?: 0, maxTemps?.size ?: 0, minTemps?.size ?: 0)
-    val dayFormatter = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
+    val dateTimeMapper = LocalDateTimeMapper(offsetSeconds)
 
     for (i in 0 until size) {
-        val date = Instant.ofEpochSecond(times[i])
-            .atZone(ZoneOffset.ofTotalSeconds(offsetSeconds))
-
         result.add(
             DailyForecast(
-                dayLabel = date.format(dayFormatter),
+                dayLabel = dateTimeMapper.mapDailyLabel(times[i]),
                 aqi = aqis[i],
                 aqiCategory = getAqiCategory(aqis[i]),
                 weatherCode = codes?.get(i) ?: 0,
