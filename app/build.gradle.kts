@@ -108,6 +108,8 @@ dependencies {
     implementation(libs.android.gms.play.services.location)
     implementation(kotlin("reflect"))
     implementation(libs.maplibre.android.sdk)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

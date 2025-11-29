@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.vitiligo.breathe.data.local.entity.AqiData
 import com.vitiligo.breathe.data.local.entity.Location
+import com.vitiligo.breathe.data.local.entity.LocationAlertSettings
 import com.vitiligo.breathe.data.local.entity.LocationDetails
 import com.vitiligo.breathe.data.local.entity.LocationHistory
 import com.vitiligo.breathe.data.local.entity.LocationSummary
@@ -14,6 +15,7 @@ import com.vitiligo.breathe.data.local.entity.SensorData
 import com.vitiligo.breathe.data.local.entity.UserLocation
 import com.vitiligo.breathe.data.local.entity.WeatherData
 import com.vitiligo.breathe.data.local.room.dao.AqiDataDao
+import com.vitiligo.breathe.data.local.room.dao.LocationAlertDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDetailsDao
 import com.vitiligo.breathe.data.local.room.dao.LocationHistoryDao
@@ -31,7 +33,8 @@ import com.vitiligo.breathe.data.local.room.dao.WeatherDataDao
         UserLocation::class,
         LocationSummary::class,
         LocationDetails::class,
-        LocationHistory::class
+        LocationHistory::class,
+        LocationAlertSettings::class
     ],
     version = AppDatabase.LATEST_VERSION,
     autoMigrations = [
@@ -41,14 +44,15 @@ import com.vitiligo.breathe.data.local.room.dao.WeatherDataDao
         AutoMigration(
             from = 4, to = 5,
             spec = AppDatabase.RenameColumnMigration::class
-        )
+        ),
+        AutoMigration(from = 5, to = 6)
     ],
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
     companion object {
-        const val LATEST_VERSION = 5
+        const val LATEST_VERSION = 6
     }
 
     abstract fun locationDao(): LocationDao
@@ -59,6 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun locationSummaryDao(): LocationSummaryDao
     abstract fun locationDetailsDao(): LocationDetailsDao
     abstract fun locationHistoryDao(): LocationHistoryDao
+    abstract fun locationAlertDao(): LocationAlertDao
 
     @RenameColumn(
         tableName = "user_locations",

@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import com.vitiligo.breathe.data.local.room.AppDatabase
 import com.vitiligo.breathe.data.local.room.dao.AqiDataDao
+import com.vitiligo.breathe.data.local.room.dao.LocationAlertDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDao
 import com.vitiligo.breathe.data.local.room.dao.LocationDetailsDao
 import com.vitiligo.breathe.data.local.room.dao.LocationHistoryDao
@@ -60,4 +61,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideLocationHistoryDao(database: AppDatabase): LocationHistoryDao = database.locationHistoryDao()
+
+    @Provides
+    @Singleton
+    fun provideLocationAlertDao(database: AppDatabase): LocationAlertDao = database.locationAlertDao()
 }
