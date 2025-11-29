@@ -13,7 +13,7 @@
     </domain-config>
 
     <!-- Default configuration enforces security for all other connections -->
-    <base-config>
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system"/>
         </trust-anchors>

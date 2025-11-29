@@ -29,7 +29,7 @@ class NetworkModule {
     @Provides
     @BreatheApiQualifier
     fun provideBreatheBaseUrl(): String {
-        return "http://192.168.100.81:8080"
+        return BuildConfig.BREATHE_API_BASE_URL
     }
 
     @Provides

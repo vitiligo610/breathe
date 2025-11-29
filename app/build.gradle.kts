@@ -37,6 +37,12 @@ android {
 
         buildConfigField(
             "String",
+            "BREATHE_API_BASE_URL",
+            properties.getProperty("BREATHE_API_BASE_URL", "")
+        )
+
+        buildConfigField(
+            "String",
             "TENANT_SECRET_TOKEN",
             properties.getProperty("TENANT_SECRET_TOKEN", "")
         )
