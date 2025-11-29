@@ -60,7 +60,6 @@ class NetworkModule {
         }
     }
 
-
     @Provides
     @Singleton
     @BreatheApiQualifier
@@ -84,7 +83,6 @@ class NetworkModule {
             .addInterceptor(loggingInterceptor)
             .build()
     }
-
 
     @Provides
     @Singleton

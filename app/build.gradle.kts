@@ -52,6 +52,12 @@ android {
             "LOCATION_IQ_API_KEY",
             properties.getProperty("LOCATION_IQ_API_KEY", "")
         )
+
+        buildConfigField(
+            "String",
+            "WAQI_API_KEY",
+            properties.getProperty("WAQI_API_KEY", "")
+        )
     }
 
     buildTypes {
@@ -101,6 +107,7 @@ dependencies {
     implementation(libs.squareup.okhttp3.logging.interceptor)
     implementation(libs.android.gms.play.services.location)
     implementation(kotlin("reflect"))
+    implementation(libs.maplibre.android.sdk)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
