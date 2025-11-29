@@ -28,8 +28,8 @@ class WorkScheduler @Inject constructor(
 
         val hourlySyncRequest = PeriodicWorkRequest.Builder(
             DataSyncWorker::class.java,
-            1,
-            TimeUnit.HOURS
+            15,
+            TimeUnit.MINUTES
         )
             .setConstraints(constraints)
             .build()

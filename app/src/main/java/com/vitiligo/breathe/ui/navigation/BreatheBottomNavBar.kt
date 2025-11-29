@@ -13,11 +13,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.vitiligo.breathe.domain.model.navigation.BottomNavItem
@@ -47,14 +47,10 @@ fun BreatheScaffold(
     modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = remember(navBackStackEntry) {
-        Screen.fromRoute(navBackStackEntry?.destination?.route ?: "")
-    }
+    val currentDestination = navBackStackEntry?.destination
 
-    var selectedDestinationIndex by rememberSaveable { mutableIntStateOf(0) }
-
-    val isBottomBarVisible = bottomNavItems.any { item ->
-        currentDestination == item.screen
+    val isBottomBarVisible = currentDestination != null && bottomNavItems.any { item ->
+        currentDestination.hierarchy.any { it.hasRoute(item.screen::class) }
     }
 
     Scaffold(
@@ -62,8 +58,7 @@ fun BreatheScaffold(
             if (isBottomBarVisible) {
                 BreatheBottomNavBar(
                     navController = navController,
-                    selectedDestinationIndex = selectedDestinationIndex,
-                    setSelectedDestinationIndex = { selectedDestinationIndex = it }
+                    currentDestination = currentDestination
                 )
             }
         },
@@ -81,20 +76,20 @@ fun BreatheScaffold(
 @Composable
 fun BreatheBottomNavBar(
     navController: NavHostController,
-    selectedDestinationIndex: Int,
-    setSelectedDestinationIndex: (Int) -> Unit,
+    currentDestination: NavDestination?,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
         windowInsets = NavigationBarDefaults.windowInsets,
         modifier = modifier
     ) {
-        bottomNavItems.forEachIndexed { index, item ->
+        bottomNavItems.forEach { item ->
             NavigationBarItem(
-                selected = selectedDestinationIndex == index,
+                selected = currentDestination?.hierarchy?.any {
+                    it.hasRoute(item.screen::class)
+                } == true,
                 onClick = {
                     navController.navigate(item.screen)
-                    setSelectedDestinationIndex(index)
                 },
                 icon = {
                     Icon(
