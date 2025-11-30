@@ -95,7 +95,13 @@ fun BreatheNavHost(
         }
 
         composable<Screen.Map> {
-            MapScreen()
+            MapScreen(
+                navigateToLocationDetailsPreview = { latitude, longitude ->
+                    navController.navigate(
+                        Screen.LocationDetails(coordinates = "$latitude,$longitude", placeId = "$latitude,$longitude")
+                    )
+                }
+            )
         }
 
         composable<Screen.Health> {
