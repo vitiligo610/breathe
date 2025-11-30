@@ -14,15 +14,15 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.vitiligo.breathe.presentation.map.MapLibreContent
+import com.vitiligo.breathe.presentation.map.MapSearchBar
 import com.vitiligo.breathe.presentation.shared.AqiCardMin
-import org.maplibre.android.MapLibre
 import org.maplibre.android.geometry.LatLng
 
 @Composable
@@ -31,9 +31,11 @@ fun MapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.uiState.value
+    val searchState = viewModel.searchState.value
     val cameraState = viewModel.cameraState
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = modifier
@@ -50,13 +52,32 @@ fun MapScreen(
                     bounds.latitudeNorth, bounds.longitudeEast,
                     zoom
                 )
+                keyboardController?.hide()
             },
             onMarkerClick = { aqi, lat, lng, _ ->
                 viewModel.onMarkerSelected(aqi, lat, lng)
+                keyboardController?.hide()
             },
             onMapClick = {
                 viewModel.onMarkerDismissed()
+                keyboardController?.hide()
             }
+        )
+
+        MapSearchBar(
+            query = searchState.query,
+            onQueryChange = viewModel::onSearchQueryChange,
+            results = searchState.results,
+            onResultClick = { result ->
+                viewModel.onSearchResultSelected(result)
+                keyboardController?.hide()
+            },
+            onToggle = { isActive ->
+                if (!isActive) keyboardController?.hide()
+                else viewModel.onMarkerDismissed()
+            },
+            modifier = Modifier
+                .align(Alignment.TopCenter)
         )
 
         AnimatedVisibility(

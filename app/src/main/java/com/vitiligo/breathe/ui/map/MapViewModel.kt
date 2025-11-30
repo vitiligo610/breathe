@@ -10,9 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.vitiligo.breathe.domain.model.LocationSearchResult
+import com.vitiligo.breathe.domain.repository.LocationSearchRepository
 import com.vitiligo.breathe.domain.repository.MapLocationRepository
 import com.vitiligo.breathe.domain.util.LocationManager
 import com.vitiligo.breathe.domain.util.Resource
+import com.vitiligo.breathe.ui.search.LocationSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +30,16 @@ import javax.inject.Inject
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val repository: MapLocationRepository,
+    private val searchRepository: LocationSearchRepository,
     private val locationManager: LocationManager,
     @param:ApplicationContext private val context: Context,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var state = mutableStateOf(MapUiState())
+    var uiState = mutableStateOf(MapUiState())
+        private set
+
+    var searchState = mutableStateOf(LocationSearchUiState())
         private set
 
     @OptIn(SavedStateHandleSaveableApi::class)
@@ -46,7 +53,96 @@ class MapViewModel @Inject constructor(
         )
     }
 
+    private var searchJob: Job? = null
     private var fetchJob: Job? = null
+
+    fun onCameraIdle(
+        swLat: Double, swLon: Double,
+        neLat: Double, neLon: Double,
+        zoom: Double
+    ) {
+        fetchJob?.cancel()
+
+        fetchJob = viewModelScope.launch {
+            delay(350)
+
+            val gridResolution = when {
+                zoom < 5 -> 8
+                zoom < 8 -> 12
+                zoom < 11 -> 20
+                else -> 30
+            }
+
+            val result = repository.getMarkers(
+                swLat, swLon, neLat, neLon, gridResolution
+            )
+
+            if (result is Resource.Success) {
+                uiState.value = uiState.value.copy(mapPoints = result.data ?: emptyList())
+            }
+        }
+    }
+
+    fun updateCameraState(lat: Double?, lon: Double?, zoom: Double) {
+        cameraState = MapCameraState(lat ?: DEFAULT_LOCATION_LAT, lon ?: DEFAULT_LOCATION_LON, zoom)
+    }
+
+    fun getCurrentLocation(onLocationFound: suspend (LatLng?) -> Unit) {
+        viewModelScope.launch {
+            val location = locationManager.getCurrentLocation()
+
+            if (location != null) {
+                onLocationFound(LatLng(location.latitude, location.longitude))
+            } else {
+                onLocationFound(null)
+            }
+        }
+    }
+
+    fun onSearchQueryChange(newQuery: String) {
+        searchState.value = searchState.value.copy(query = newQuery)
+
+        searchJob?.cancel()
+
+        if (newQuery.isBlank()) {
+            searchState.value = searchState.value.copy(results = emptyList())
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(500)
+            searchState.value = searchState.value.copy(isLoading = true)
+
+            when (val result = searchRepository.search(newQuery)) {
+                is Resource.Success -> {
+                    searchState.value = searchState.value.copy(
+                        results = result.data ?: emptyList(),
+                        isLoading = false,
+                        error = null
+                    )
+                }
+                is Resource.Error -> {
+                    searchState.value = searchState.value.copy(
+                        isLoading = false,
+                        error = result.message
+                    )
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    fun onSearchResultSelected(result: LocationSearchResult) {
+        searchState.value = LocationSearchUiState()
+
+        updateCameraState(result.latitude, result.longitude, 12.0)
+
+        onCameraIdle(
+            result.latitude - 0.1, result.longitude - 0.1,
+            result.latitude + 0.1, result.longitude + 0.1,
+            12.0
+        )
+    }
 
     fun onMarkerSelected(aqi: Int, lat: Double, lng: Double) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -78,7 +174,7 @@ class MapViewModel @Inject constructor(
             )
 
             withContext(Dispatchers.Main) {
-                state.value = state.value.copy(
+                uiState.value = uiState.value.copy(
                     selectedPoint = selectedInfo
                 )
             }
@@ -86,50 +182,7 @@ class MapViewModel @Inject constructor(
     }
 
     fun onMarkerDismissed() {
-        state.value = state.value.copy(selectedPoint = null)
-    }
-
-    fun updateCameraState(lat: Double?, lon: Double?, zoom: Double) {
-        cameraState = MapCameraState(lat ?: DEFAULT_LOCATION_LAT, lon ?: DEFAULT_LOCATION_LON, zoom)
-    }
-
-    fun getCurrentLocation(onLocationFound: suspend (LatLng?) -> Unit) {
-        viewModelScope.launch {
-            val location = locationManager.getCurrentLocation()
-
-            if (location != null) {
-                onLocationFound(LatLng(location.latitude, location.longitude))
-            } else {
-                onLocationFound(null)
-            }
-        }
-    }
-
-    fun onCameraIdle(
-        swLat: Double, swLon: Double,
-        neLat: Double, neLon: Double,
-        zoom: Double
-    ) {
-        fetchJob?.cancel()
-
-        fetchJob = viewModelScope.launch {
-            delay(350)
-
-            val gridResolution = when {
-                zoom < 5 -> 8
-                zoom < 8 -> 12
-                zoom < 11 -> 20
-                else -> 30
-            }
-
-            val result = repository.getMarkers(
-                swLat, swLon, neLat, neLon, gridResolution
-            )
-
-            if (result is Resource.Success) {
-                state.value = state.value.copy(mapPoints = result.data ?: emptyList())
-            }
-        }
+        uiState.value = uiState.value.copy(selectedPoint = null)
     }
 
     companion object {
