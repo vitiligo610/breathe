@@ -1,16 +1,21 @@
 package com.vitiligo.breathe.ui.map
 
 import android.graphics.Color
-import android.os.Bundle
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,15 +23,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.vitiligo.breathe.BuildConfig
+import com.vitiligo.breathe.domain.util.awaitMap
+import com.vitiligo.breathe.domain.util.rememberMapViewWithLifecycle
 import com.vitiligo.breathe.presentation.shared.AqiCardMin
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.expressions.Expression.literal
@@ -49,6 +53,8 @@ import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.Point
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 
 private const val AQI_SOURCE_ID = "aqi-backend-source"
 private const val AQI_CIRCLE_LAYER_ID = "aqi-circle-layer"
@@ -60,29 +66,14 @@ fun MapScreen(
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.value
+    val cameraState = viewModel.cameraState
 
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val locationIqKey = BuildConfig.LOCATION_IQ_API_KEY
 
     remember { MapLibre.getInstance(context) }
-    val mapView = remember { MapView(context) }
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
-                Lifecycle.Event.ON_START -> mapView.onStart()
-                Lifecycle.Event.ON_RESUME -> mapView.onResume()
-                Lifecycle.Event.ON_PAUSE -> mapView.onPause()
-                Lifecycle.Event.ON_STOP -> mapView.onStop()
-                Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
+    val mapView = rememberMapViewWithLifecycle()
+    var isCameraRestored by remember { mutableStateOf(false) }
 
     val mapPoints = state.mapPoints
     LaunchedEffect(mapPoints) {
@@ -94,12 +85,10 @@ fun MapScreen(
                         Feature.fromGeometry(
                             Point.fromLngLat(point.longitude, point.latitude)
                         ).apply {
-                            // Inject properties for the Style Expressions
                             addNumberProperty("aqi", point.aqi)
                             addBooleanProperty("is_cluster", point.isCluster)
                             addNumberProperty("point_count", point.pointCount)
 
-                            // Generate a simple ID hash for click handling since API doesn't give one
                             val idHash = "${point.latitude},${point.longitude}".hashCode()
                             addNumberProperty("id", idHash)
                         }
@@ -119,67 +108,94 @@ fun MapScreen(
             modifier = Modifier.fillMaxSize(),
             update = { map ->
                 map.getMapAsync { googleMap ->
-                    val styleUrl =
-                        "https://tiles.locationiq.com/v3/streets/vector.json?key=$locationIqKey"
+                    if (googleMap.style == null) {
+                        val styleUrl =
+                            "https://tiles.locationiq.com/v3/streets/vector.json?key=$locationIqKey"
 
-                    googleMap.setStyle(styleUrl) { style ->
-                        setupAqiLayers(style)
+                        googleMap.setStyle(styleUrl) { style ->
+                            setupAqiLayers(style)
 
-                        if (googleMap.cameraPosition.target?.latitude == 0.0) {
-                            googleMap.cameraPosition = CameraPosition.Builder()
-                                .target(LatLng(24.8607, 67.0011))
-                                .zoom(10.0)
-                                .build()
-                        }
+                            if (!isCameraRestored) {
+                                googleMap.cameraPosition = CameraPosition.Builder()
+                                    .target(LatLng(cameraState.latitude, cameraState.longitude))
+                                    .zoom(cameraState.zoom)
+                                    .build()
 
-                        googleMap.addOnCameraIdleListener {
-                            val bounds = googleMap.projection.visibleRegion.latLngBounds
-                            val zoom = googleMap.cameraPosition.zoom
+                                isCameraRestored = true
+                            }
 
-                            viewModel.onCameraIdle(
-                                swLat = bounds.latitudeSouth,
-                                swLon = bounds.longitudeWest,
-                                neLat = bounds.latitudeNorth,
-                                neLon = bounds.longitudeEast,
-                                zoom = zoom
-                            )
-                        }
+                            googleMap.addOnCameraIdleListener {
+                                val position = googleMap.cameraPosition
+                                val bounds = googleMap.projection.visibleRegion.latLngBounds
 
-                        googleMap.addOnMapClickListener { latLng ->
-                            val screenPoint = googleMap.projection.toScreenLocation(latLng)
-                            val features =
-                                googleMap.queryRenderedFeatures(screenPoint, AQI_CIRCLE_LAYER_ID)
+                                viewModel.updateCameraState(position.target?.latitude,
+                                    position.target?.longitude, position.zoom)
 
-                            if (features.isNotEmpty()) {
-                                val feature = features[0]
-                                val isCluster = feature.getBooleanProperty("is_cluster") ?: false
-
-                                viewModel.onMarkerSelected(
-                                    feature.getNumberProperty("aqi").toInt(),
-                                    latLng.latitude, latLng.longitude
+                                viewModel.onCameraIdle(
+                                    bounds.latitudeSouth, bounds.longitudeWest,
+                                    bounds.latitudeNorth, bounds.longitudeEast,
+                                    position.zoom
                                 )
-//                                if (isCluster) {
-//                                    val currentZoom = googleMap.cameraPosition.zoom
-//                                    googleMap.animateCamera(
-//                                        CameraUpdateFactory.newLatLngZoom(
-//                                            latLng,
-//                                            currentZoom + 2
-//                                        )
-//                                    )
-//                                } else {
-//                                    viewModel.onMarkerSelected(feature.getNumberProperty("aqi") as Int, latLng.latitude, latLng.longitude)
-//                                }
-                                true
-                            } else {
-                                viewModel.onMarkerDismissed()
+                            }
 
-                                false
+                            googleMap.addOnMapClickListener { latLng ->
+                                val screenPoint = googleMap.projection.toScreenLocation(latLng)
+                                val features =
+                                    googleMap.queryRenderedFeatures(
+                                        screenPoint,
+                                        AQI_CIRCLE_LAYER_ID
+                                    )
+
+                                if (features.isNotEmpty()) {
+                                    val feature = features[0]
+
+                                    viewModel.onMarkerSelected(
+                                        feature.getNumberProperty("aqi").toInt(),
+                                        latLng.latitude, latLng.longitude
+                                    )
+
+                                    true
+                                } else {
+                                    viewModel.onMarkerDismissed()
+
+                                    false
+                                }
                             }
                         }
                     }
                 }
             }
         )
+
+        AnimatedVisibility(
+            visible = state.selectedPoint == null,
+            enter = slideInVertically { it },
+            exit = slideOutVertically { it },
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.BottomEnd)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    viewModel.getCurrentLocation { userLatLng ->
+                        if (userLatLng != null) {
+                            mapView.awaitMap().animateCamera(
+                                CameraUpdateFactory.newLatLngZoom(userLatLng, 14.0)
+                            )
+                        } else {
+                            Toast.makeText(context, "Location not found", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = "My Location"
+                )
+            }
+        }
 
         AnimatedVisibility(
             visible = state.selectedPoint != null,
@@ -210,16 +226,6 @@ private fun setupAqiLayers(style: Style) {
             circleStrokeWidth(1f),
             circleRadius(18f),
 
-//            circleRadius(
-//                switchCase(
-//                    toBool(get("is_cluster")),
-//                    // Clusters are slightly larger
-//                    interpolate(exponential(2.5f), zoom(), stop(2, 100f), stop(12, 108f)),
-//                    // Single points are standard size
-//                    interpolate(exponential(2.5f), zoom(), stop(2, 38f), stop(98, 100f))
-//                )
-//            ),
-
             circleColor(
                 step(get("aqi"),
                     literal("#ABD162"), // 0-50 (Green)
@@ -237,11 +243,6 @@ private fun setupAqiLayers(style: Style) {
         textLayer.setProperties(
             textField(
                 get("aqi")
-//                switchCase(
-//                    toBool(get("is_cluster")),
-//                    toString(get("point_count")),
-//                    toString(get("aqi"))
-//                )
             ),
             textSize(13f),
 

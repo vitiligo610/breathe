@@ -2,11 +2,16 @@ package com.vitiligo.breathe.ui.map
 
 import android.content.Context
 import android.location.Geocoder
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vitiligo.breathe.data.remote.model.MapLocationPoint
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import com.vitiligo.breathe.domain.repository.MapLocationRepository
+import com.vitiligo.breathe.domain.util.LocationManager
 import com.vitiligo.breathe.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,16 +20,31 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.maplibre.android.geometry.LatLng
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val repository: MapLocationRepository,
-    @param:ApplicationContext private val context: Context
+    private val locationManager: LocationManager,
+    @param:ApplicationContext private val context: Context,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var state = mutableStateOf(MapUiState())
+        private set
+
+    @OptIn(SavedStateHandleSaveableApi::class)
+    var cameraState by savedStateHandle.saveable(MAP_STATE_KEY) {
+        mutableStateOf(
+            MapCameraState(
+                latitude = DEFAULT_LOCATION_LAT,
+                longitude = DEFAULT_LOCATION_LON,
+                zoom = DEFAULT_ZOOM
+            )
+        )
+    }
 
     private var fetchJob: Job? = null
 
@@ -69,6 +89,22 @@ class MapViewModel @Inject constructor(
         state.value = state.value.copy(selectedPoint = null)
     }
 
+    fun updateCameraState(lat: Double?, lon: Double?, zoom: Double) {
+        cameraState = MapCameraState(lat ?: DEFAULT_LOCATION_LAT, lon ?: DEFAULT_LOCATION_LON, zoom)
+    }
+
+    fun getCurrentLocation(onLocationFound: suspend (LatLng?) -> Unit) {
+        viewModelScope.launch {
+            val location = locationManager.getCurrentLocation()
+
+            if (location != null) {
+                onLocationFound(LatLng(location.latitude, location.longitude))
+            } else {
+                onLocationFound(null)
+            }
+        }
+    }
+
     fun onCameraIdle(
         swLat: Double, swLon: Double,
         neLat: Double, neLon: Double,
@@ -95,4 +131,12 @@ class MapViewModel @Inject constructor(
             }
         }
     }
+
+    companion object {
+        private const val MAP_STATE_KEY = "map_camera_state"
+        private const val DEFAULT_LOCATION_LAT = 30.3753
+        private const val DEFAULT_LOCATION_LON = 69.5421
+        private const val DEFAULT_ZOOM = 5.0
+    }
+
 }
