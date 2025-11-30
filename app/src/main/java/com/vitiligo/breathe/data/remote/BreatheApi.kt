@@ -3,6 +3,7 @@ package com.vitiligo.breathe.data.remote
 import com.vitiligo.breathe.data.remote.model.LocationAirQualityHistoryResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateDetailsResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateSummaryResponse
+import com.vitiligo.breathe.data.remote.model.MapLocationPoint
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -25,4 +26,10 @@ interface BreatheApi {
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double
     ): LocationAirQualityHistoryResponse
+
+    @GET("api/location/map")
+    suspend fun getLocationMap(
+        @Query("bounding_box") boundingBox: String,
+        @Query("grid_resolution") gridResolution: Int
+    ): List<MapLocationPoint>
 }

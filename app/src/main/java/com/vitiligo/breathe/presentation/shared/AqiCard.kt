@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +41,7 @@ import com.vitiligo.breathe.R
 import com.vitiligo.breathe.data.placeholder.mockAqiCardData
 import com.vitiligo.breathe.domain.model.AqiCategory
 import com.vitiligo.breathe.domain.model.ui.AqiCardData
+import com.vitiligo.breathe.domain.util.getAqiCategory
 import com.vitiligo.breathe.domain.util.getAqiCategoryColor
 import com.vitiligo.breathe.domain.util.getAqiCategoryDarkColor
 import com.vitiligo.breathe.domain.util.getAqiCategoryLabel
@@ -84,48 +89,10 @@ fun AqiCard(
                 .background(aqiColor)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(aqiColorDark),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = data.aqi.toString(),
-                            color = onAqiColor,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                        Text(
-                            text = "US AQI+",
-                            color = onAqiColor,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 11.sp,
-                        )
-                    }
-                }
-
-                Text(
-                    text = getAqiCategoryLabel(data.category),
-                    color = onAqiColor,
-                    style = if (data.category != AqiCategory.ORANGE) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge.copy(fontSize = 21.sp),
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 16.dp)
-                )
-
-                Image(
-                    painter = painterResource(id = getAqiFaceRes(data.category)),
-                    contentDescription = "AQI Status Face",
-                    modifier = Modifier.size(56.dp)
-                )
-            }
+            AqiCardTop(
+                category = data.category,
+                aqi = data.aqi
+            )
 
             HorizontalDivider(color = aqiColorDark, thickness = (0.5).dp, modifier = Modifier.padding(vertical = 12.dp))
 
@@ -179,6 +146,113 @@ fun AqiCard(
             WeatherDetailItem(
                 iconRes = R.drawable.ic_humidity_filled_24,
                 value = "${data.humidityPercent.toInt()}%",
+            )
+        }
+    }
+}
+
+@Composable
+fun AqiCardTop(
+    category: AqiCategory,
+    aqi: Int,
+    modifier: Modifier = Modifier
+) {
+    val aqiColorDark = getAqiCategoryDarkColor(category)
+    val onAqiColor = getOnAqiCategoryColor(category)
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(60.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(aqiColorDark),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = aqi.toString(),
+                    color = onAqiColor,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
+                Text(
+                    text = "US AQI+",
+                    color = onAqiColor,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 11.sp,
+                )
+            }
+        }
+
+        Text(
+            text = getAqiCategoryLabel(category),
+            color = onAqiColor,
+            style = if (category != AqiCategory.ORANGE) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge.copy(fontSize = 21.sp),
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp)
+        )
+
+        Image(
+            painter = painterResource(id = getAqiFaceRes(category)),
+            contentDescription = "AQI Status Face",
+            modifier = Modifier.size(56.dp)
+        )
+    }
+}
+
+@Composable
+fun AqiCardMin(
+    name: String,
+    country: String,
+    aqi: Int,
+    modifier: Modifier = Modifier
+) {
+    val category = getAqiCategory(aqi)
+    val aqiColor = getAqiCategoryColor(category)
+
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 4.dp, horizontal = 8.dp)
+                .fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .size(16.dp)
+            )
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = ", $country",
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(aqiColor)
+        ) {
+            AqiCardTop(
+                category = getAqiCategory(aqi),
+                aqi = aqi,
+                modifier = Modifier
+                    .padding(8.dp)
             )
         }
     }
@@ -241,8 +315,10 @@ private fun WindDetailItem(
 @Composable
 fun AqiCardPreview() {
     MaterialTheme {
-        AqiCard(
-            modifier = Modifier.padding(16.dp)
+        AqiCardMin(
+            name = "Rawalpindi",
+            country = "Pakistan",
+            aqi = 132
         )
     }
 }
