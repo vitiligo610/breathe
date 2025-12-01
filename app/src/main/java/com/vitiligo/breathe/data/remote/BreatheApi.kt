@@ -19,14 +19,14 @@ interface BreatheApi {
     suspend fun getLocationSummary(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("reports_radius_km") reportsRadiusKm: Double = 2600.0
+        @Query("reports_radius_km") reportsRadiusKm: Double = 500.0
     ): LocationClimateSummaryResponse
 
     @GET("api/location")
     suspend fun getLocationDetails(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("reports_radius_km") reportsRadiusKm: Double = 2600.0
+        @Query("reports_radius_km") reportsRadiusKm: Double = 500.0
     ): LocationClimateDetailsResponse
 
     @GET("api/location/history")
