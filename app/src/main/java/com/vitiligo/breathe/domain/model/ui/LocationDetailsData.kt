@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.domain.model.ui
 
+import com.vitiligo.breathe.data.remote.model.report.PollutionReport
 import com.vitiligo.breathe.domain.model.Pollutant
 
 data class LocationDetailsData(
@@ -11,4 +12,5 @@ data class LocationDetailsData(
     val pollutants: List<Pollutant>,
     val placeId: String,
     val locationAdded: Boolean = false,
+    val nearbyReports: List<PollutionReport> = emptyList()
 )

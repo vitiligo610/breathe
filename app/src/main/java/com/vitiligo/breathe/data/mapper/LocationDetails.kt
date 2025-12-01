@@ -25,7 +25,8 @@ fun LocationClimateDetailsResponse.toDetailsEntity(locationId: Int): LocationDet
         locationId = locationId,
         lastUpdatedTimestamp = System.currentTimeMillis(),
         weatherData = this.weather ?: LocationWeatherData(),
-        airQualityData = this.airQuality ?: LocationAirQualityData()
+        airQualityData = this.airQuality ?: LocationAirQualityData(),
+        nearbyReports = this.nearbyReports ?: emptyList()
     )
 }
 
@@ -69,7 +70,8 @@ fun LocationWithDetails.toDomainModel(): LocationDetailsData? {
         hourlyForecasts = hourly,
         dailyForecasts = daily,
         pollutants = pollutants,
-        locationAdded = location.placeId != null
+        locationAdded = location.placeId != null,
+        nearbyReports = details.nearbyReports
     )
 }
 
@@ -111,7 +113,8 @@ fun LocationClimateDetailsResponse.toDomainModel(): LocationDetailsData {
         hourlyForecasts = hourly,
         dailyForecasts = daily,
         pollutants = pollutants,
-        locationAdded = false
+        locationAdded = false,
+        nearbyReports = this.nearbyReports ?: emptyList()
     )
 }
 

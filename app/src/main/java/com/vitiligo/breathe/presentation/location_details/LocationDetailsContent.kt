@@ -1,17 +1,10 @@
 package com.vitiligo.breathe.presentation.location_details
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vitiligo.breathe.presentation.shared.AqiCard
@@ -79,6 +72,12 @@ fun LocationDetailsContent(
             }
 
             item { History() }
+
+            item {
+                CommunityReports(
+                    reports = uiState.data.nearbyReports
+                )
+            }
         }
     }
 }

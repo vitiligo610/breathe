@@ -46,14 +46,15 @@ import com.vitiligo.breathe.data.local.room.dao.WeatherDataDao
             spec = AppDatabase.RenameColumnMigration::class
         ),
         AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7)
+        AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8)
     ],
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
 
     companion object {
-        const val LATEST_VERSION = 7
+        const val LATEST_VERSION = 8
     }
 
     abstract fun locationDao(): LocationDao

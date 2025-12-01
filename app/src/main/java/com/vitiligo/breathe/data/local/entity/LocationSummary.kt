@@ -5,10 +5,9 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.vitiligo.breathe.data.remote.model.report.PollutionReport
 import com.vitiligo.breathe.data.remote.model.report.ReportType
 import com.vitiligo.breathe.domain.converter.LocationSummaryConverter
-import com.vitiligo.breathe.domain.converter.ReportTypeConverter
+import com.vitiligo.breathe.domain.converter.PollutionReportTypeConverter
 import com.vitiligo.breathe.domain.model.AqiCategory
 import kotlinx.serialization.Serializable
 
@@ -26,7 +25,7 @@ import kotlinx.serialization.Serializable
 )
 @TypeConverters(
     LocationSummaryConverter::class,
-    ReportTypeConverter::class
+    PollutionReportTypeConverter::class
 )
 data class LocationSummary(
     @PrimaryKey(autoGenerate = true)
