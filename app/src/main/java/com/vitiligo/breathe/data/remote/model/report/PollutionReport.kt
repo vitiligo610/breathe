@@ -1,7 +1,9 @@
 package com.vitiligo.breathe.data.remote.model.report
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class PollutionReport(
     val id: String,
     val latitude: Double,

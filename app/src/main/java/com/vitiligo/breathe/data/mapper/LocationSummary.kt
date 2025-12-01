@@ -40,7 +40,8 @@ fun LocationClimateSummaryResponse.toSummaryEntity(parentId: Int): LocationSumma
             this.forecast?.temperatureMax,
             this.forecast?.temperatureMin,
             this.utcOffsetSeconds ?: 0
-        )
+        ),
+        recentReportType = nearbyReports?.firstOrNull()?.reportType
     )
 }
 
@@ -76,7 +77,8 @@ fun LocationWithSummary.toDomainModel(): LocationCardData {
         currentWeatherCode = sum?.currentWeatherCode ?: 0,
         forecasts = domainForecasts,
         time = localTime,
-        utcOffsetSeconds = loc.utcOffsetSeconds
+        utcOffsetSeconds = loc.utcOffsetSeconds,
+        recentReportType = sum?.recentReportType
     )
 }
 

@@ -1,6 +1,7 @@
 package com.vitiligo.breathe.data.remote.model
 
 import com.google.gson.annotations.SerializedName
+import com.vitiligo.breathe.data.remote.model.report.PollutionReport
 
 class LocationClimateSummaryResponse : BaseLocationResponse() {
 
@@ -12,6 +13,9 @@ class LocationClimateSummaryResponse : BaseLocationResponse() {
 
     @SerializedName("forecast")
     val forecast: ForecastData? = null
+
+    @SerializedName("nearby_reports")
+    val nearbyReports: List<PollutionReport>? = null
 }
 
 data class ClimateSummaryUnits(

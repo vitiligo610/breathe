@@ -3,6 +3,7 @@ package com.vitiligo.breathe.presentation.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -45,6 +47,8 @@ import com.vitiligo.breathe.domain.util.getOnAqiCategoryColor
 import com.vitiligo.breathe.domain.util.getWeatherIconRes
 import com.vitiligo.breathe.presentation.shared.AqiValueBadge
 import com.vitiligo.breathe.presentation.shared.DashedVerticalDivider
+import com.vitiligo.breathe.presentation.shared.getReportColor
+import com.vitiligo.breathe.presentation.shared.getReportIcon
 import com.vitiligo.breathe.ui.theme.BreatheTheme
 
 @Composable
@@ -162,6 +166,25 @@ fun LocationCard(
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
+                    }
+
+                    if (data.recentReportType != null) {
+                        val reportColor = getReportColor(data.recentReportType)
+
+                        Box(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(32.dp)
+                                .background(reportColor.copy(alpha = 0.1f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = getReportIcon(data.recentReportType),
+                                contentDescription = "Pollution Report",
+                                tint = reportColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
 

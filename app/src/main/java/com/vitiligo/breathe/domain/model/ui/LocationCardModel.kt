@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.domain.model.ui
 
+import com.vitiligo.breathe.data.remote.model.report.ReportType
 import com.vitiligo.breathe.domain.model.AqiCategory
 
 data class LocationCardData(
@@ -12,5 +13,6 @@ data class LocationCardData(
     val currentWeatherCode: Int,
     val forecasts: List<ForecastDayData>,
     val time: String,
-    val utcOffsetSeconds: Int = 0
+    val utcOffsetSeconds: Int = 0,
+    val recentReportType: ReportType? = null
 )
