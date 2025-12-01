@@ -1,13 +1,13 @@
 package com.vitiligo.breathe.presentation.map
 
 import android.graphics.Color
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +21,7 @@ import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.expressions.Expression.literal
@@ -79,6 +80,41 @@ fun MapLibreContent(
     var isMapInitialized by remember { mutableStateOf(false) }
 
     val pollutionIcons = rememberPollutionBitmaps(context)
+
+    val handleMapClick by rememberUpdatedState { googleMap: MapLibreMap, latLng: LatLng ->
+        val screenPoint = googleMap.projection.toScreenLocation(latLng)
+
+        if (activeMarkerType == "aqi") {
+            val features = googleMap.queryRenderedFeatures(screenPoint, AQI_CIRCLE_LAYER_ID)
+            if (features.isNotEmpty()) {
+                val feature = features[0]
+                onMarkerClick(
+                    feature.getNumberProperty("aqi").toInt(),
+                    latLng.latitude,
+                    latLng.longitude,
+                    feature.getBooleanProperty("is_cluster") ?: false
+                )
+                return@rememberUpdatedState true
+            }
+        } else {
+            val features = googleMap.queryRenderedFeatures(screenPoint, POLLUTION_LAYER_ID)
+            if (features.isNotEmpty()) {
+                val feature = features[0]
+                onPollutionClick(
+                    feature.getNumberProperty("report_id").toLong(),
+                    feature.getStringProperty("report_type"),
+                    feature.getStringProperty("report_desc"),
+                    feature.getNumberProperty("report_time").toLong(),
+                    latLng.latitude,
+                    latLng.longitude
+                )
+                return@rememberUpdatedState true
+            }
+        }
+
+        onMapClick()
+        false
+    }
 
     LaunchedEffect(mapPoints) {
         mapView.getMapAsync { map ->
@@ -158,35 +194,7 @@ fun MapLibreContent(
                             )
                         }
 
-                        googleMap.addOnMapClickListener { latLng ->
-                            val screenPoint = googleMap.projection.toScreenLocation(latLng)
-
-                            val features = googleMap.queryRenderedFeatures(screenPoint, AQI_CIRCLE_LAYER_ID, POLLUTION_LAYER_ID)
-                            if (features.isNotEmpty()) {
-                                val feature = features[0]
-                                if (activeMarkerType == "aqi") {
-                                    onMarkerClick(
-                                        feature.getNumberProperty("aqi").toInt(),
-                                        latLng.latitude,
-                                        latLng.longitude,
-                                        feature.getBooleanProperty("is_cluster") ?: false
-                                    )
-                                } else if (activeMarkerType == "pollution_report") {
-                                    onPollutionClick(
-                                        feature.getNumberProperty("report_id").toLong(),
-                                        feature.getStringProperty("report_type"),
-                                        feature.getStringProperty("report_desc"),
-                                        feature.getNumberProperty("report_time").toLong(),
-                                        latLng.latitude,
-                                        latLng.longitude
-                                    )
-                                }
-                                return@addOnMapClickListener true
-                            }
-
-                            onMapClick()
-                            false
-                        }
+                        googleMap.addOnMapClickListener { latLng -> handleMapClick(googleMap, latLng) }
                     }
                 }
 

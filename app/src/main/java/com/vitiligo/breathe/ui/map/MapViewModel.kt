@@ -1,5 +1,6 @@
 package com.vitiligo.breathe.ui.map
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -55,6 +56,8 @@ class MapViewModel @Inject constructor(
 
     fun onToggleMarkerType(type: String) {
         if (uiState.value.activeMarkerType != type) {
+            Log.d("MapViewModel", "Toggling marker type to $type")
+
             uiState.value = uiState.value.copy(
                 mapPoints = emptyList(),
                 selectedPoint = null,
