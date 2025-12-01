@@ -53,12 +53,6 @@ android {
             "LOCATION_IQ_API_KEY",
             properties.getProperty("LOCATION_IQ_API_KEY", "")
         )
-
-        buildConfigField(
-            "String",
-            "WAQI_API_KEY",
-            properties.getProperty("WAQI_API_KEY", "")
-        )
     }
 
     buildTypes {
