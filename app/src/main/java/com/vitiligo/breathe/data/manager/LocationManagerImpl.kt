@@ -1,4 +1,4 @@
-package com.vitiligo.breathe.domain.util
+package com.vitiligo.breathe.data.manager
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,22 +6,21 @@ import android.location.Location
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.vitiligo.breathe.domain.manager.LocationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-@Singleton
-class LocationManager @Inject constructor(
+class LocationManagerImpl @Inject constructor(
     @param:ApplicationContext val context: Context
-) {
+): LocationManager {
 
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
     @SuppressLint("MissingPermission")
-    suspend fun getCurrentLocation(): Location? = suspendCancellableCoroutine { cont ->
+    override suspend fun getCurrentLocation(): Location? = suspendCancellableCoroutine { cont ->
         val cancellationTokenSource = CancellationTokenSource()
 
         fusedLocationClient.getCurrentLocation(

@@ -4,7 +4,13 @@ import com.vitiligo.breathe.data.remote.model.LocationAirQualityHistoryResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateDetailsResponse
 import com.vitiligo.breathe.data.remote.model.LocationClimateSummaryResponse
 import com.vitiligo.breathe.data.remote.model.MapLocationPoint
+import com.vitiligo.breathe.data.remote.model.report.CreateReportRequest
+import com.vitiligo.breathe.data.remote.model.report.PollutionReport
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface BreatheApi {
@@ -32,4 +38,9 @@ interface BreatheApi {
         @Query("bounding_box") boundingBox: String,
         @Query("grid_resolution") gridResolution: Int
     ): List<MapLocationPoint>
+
+    @POST("api/location/report")
+    suspend fun submitReport(
+        @Body request: CreateReportRequest
+    ): Response<PollutionReport>
 }

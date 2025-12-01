@@ -1,10 +1,12 @@
 package com.vitiligo.breathe.data.di
 
+import com.vitiligo.breathe.data.repository.CommunityReportRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationDetailsRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationHistoryRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationSearchRepositoryImpl
 import com.vitiligo.breathe.data.repository.LocationSummaryRepositoryImpl
 import com.vitiligo.breathe.data.repository.MapLocationRepositoryImpl
+import com.vitiligo.breathe.domain.repository.CommunityReportRepository
 import com.vitiligo.breathe.domain.repository.LocationDetailsRepository
 import com.vitiligo.breathe.domain.repository.LocationHistoryRepository
 import com.vitiligo.breathe.domain.repository.LocationSearchRepository
@@ -50,4 +52,10 @@ abstract class RepositoryModule {
     abstract fun bindMapLocationRepository(
         mapLocationRepositoryImpl: MapLocationRepositoryImpl
     ): MapLocationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCommunityReportRepository(
+        communityReportRepositoryImpl: CommunityReportRepositoryImpl
+    ): CommunityReportRepository
 }

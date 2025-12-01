@@ -1,7 +1,9 @@
 package com.vitiligo.breathe.ui.search
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vitiligo.breathe.domain.manager.LocationManager
 import com.vitiligo.breathe.domain.model.Coordinates
 import com.vitiligo.breathe.domain.model.LocationSearchResult
 import com.vitiligo.breathe.domain.repository.LocationSearchRepository
@@ -18,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: LocationSearchRepository,
-    private val locationRepository: LocationSummaryRepository
+    private val locationRepository: LocationSummaryRepository,
+    private val locationManager: LocationManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LocationSearchUiState())
@@ -62,11 +65,5 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun onLocationSelected(result: LocationSearchResult, onComplete: () -> Unit) {
-
-        viewModelScope.launch {
-            locationRepository.addLocation(Coordinates(result.latitude, result.longitude), placeId = result.id)
-            onComplete()
-        }
-    }
+    suspend fun getCurrentLocation(): Location? = locationManager.getCurrentLocation()
 }

@@ -1,6 +1,7 @@
 package com.vitiligo.breathe.presentation.search
 
 import android.Manifest
+import android.location.Location
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +31,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.vitiligo.breathe.domain.util.LocationManager
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,10 +41,10 @@ fun LocationSearchTopBar(
     onNavigateBack: () -> Unit,
     focusRequester: FocusRequester,
     navigateToLocation: (Double, Double) -> Unit,
+    getCurrentLocation: suspend () -> Location?,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val locationManager = remember { LocationManager(context) }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -56,7 +55,7 @@ fun LocationSearchTopBar(
         if (isGranted) {
             scope.launch {
                 try {
-                    val location = locationManager.getCurrentLocation()
+                    val location = getCurrentLocation()
                     if (location != null) {
                         navigateToLocation(location.latitude, location.longitude)
                     } else {

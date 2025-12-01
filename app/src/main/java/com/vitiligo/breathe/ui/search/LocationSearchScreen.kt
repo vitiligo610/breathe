@@ -37,7 +37,8 @@ fun LocationSearchScreen(
                 focusRequester = focusRequester,
                 navigateToLocation = { latitude, longitude ->
                     navigateToLocationDetailsPreview(latitude, longitude, "$latitude,$longitude")
-                }
+                },
+                getCurrentLocation = viewModel::getCurrentLocation
             )
         }
     ) { padding ->

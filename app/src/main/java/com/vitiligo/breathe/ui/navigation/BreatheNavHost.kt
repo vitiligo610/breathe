@@ -14,6 +14,7 @@ import com.vitiligo.breathe.ui.health.HealthScreen
 import com.vitiligo.breathe.ui.home.HomeScreen
 import com.vitiligo.breathe.ui.location_details.LocationDetailsScreen
 import com.vitiligo.breathe.ui.map.MapScreen
+import com.vitiligo.breathe.ui.report.ReportScreen
 import com.vitiligo.breathe.ui.search.LocationSearchScreen
 
 @Composable
@@ -100,12 +101,23 @@ fun BreatheNavHost(
                     navController.navigate(
                         Screen.LocationDetails(coordinates = "$latitude,$longitude", placeId = "$latitude,$longitude")
                     )
+                },
+                navigateToCommunityReport = { latitude, longitude ->
+                    navController.navigate(
+                        Screen.CommunityReport(latitude, longitude)
+                    )
                 }
             )
         }
 
         composable<Screen.Health> {
             HealthScreen()
+        }
+
+        composable<Screen.CommunityReport> {
+            ReportScreen(
+                navigateBack = { navController.popBackStack() },
+            )
         }
     }
 }

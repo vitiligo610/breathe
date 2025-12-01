@@ -76,3 +76,7 @@ fun String.toCoordinates(): Coordinates {
         longitude = longitude
     )
 }
+
+fun Double.toFixed(decimalPlaces: Int = 2): String {
+    return "%.${decimalPlaces}f".format(this)
+}

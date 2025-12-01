@@ -30,4 +30,10 @@ sealed class Screen {
 
     @Serializable
     data object Health: Screen()
+
+    @Serializable
+    data class CommunityReport(
+        val latitude: Double,
+        val longitude: Double
+    ): Screen()
 }

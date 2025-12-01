@@ -1,7 +1,6 @@
 package com.vitiligo.breathe.ui.map
 
 import android.content.Context
-import android.location.Geocoder
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,10 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.vitiligo.breathe.domain.manager.GeocodingManager
+import com.vitiligo.breathe.domain.manager.LocationManager
 import com.vitiligo.breathe.domain.model.LocationSearchResult
 import com.vitiligo.breathe.domain.repository.LocationSearchRepository
 import com.vitiligo.breathe.domain.repository.MapLocationRepository
-import com.vitiligo.breathe.domain.util.LocationManager
 import com.vitiligo.breathe.domain.util.Resource
 import com.vitiligo.breathe.ui.search.LocationSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +24,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.maplibre.android.geometry.LatLng
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +31,7 @@ class MapViewModel @Inject constructor(
     private val repository: MapLocationRepository,
     private val searchRepository: LocationSearchRepository,
     private val locationManager: LocationManager,
+    private val geocodingManager: GeocodingManager,
     @param:ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -150,16 +150,11 @@ class MapViewModel @Inject constructor(
             var countryName = "Unknown Country"
 
             try {
-                val geocoder = Geocoder(context, Locale.getDefault())
+                val address = geocodingManager.reverseGeocode(lat, lng)
 
-                @Suppress("DEPRECATION")
-                val addresses = geocoder.getFromLocation(lat, lng, 1)
-
-                if (!addresses.isNullOrEmpty()) {
-                    val address = addresses[0]
-
-                    cityName = address.locality ?: address.subAdminArea ?: "Unknown City"
-                    countryName = address.countryName ?: "Unknown Country"
+                if (address != null) {
+                    cityName = address.city
+                    countryName = address.country
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
