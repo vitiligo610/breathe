@@ -6,11 +6,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -33,6 +37,8 @@ import com.vitiligo.breathe.presentation.map.MapLibreContent
 import com.vitiligo.breathe.presentation.map.MapSearchBar
 import com.vitiligo.breathe.presentation.map.ReportingModeControls
 import com.vitiligo.breathe.presentation.map.StandardMapControls
+import com.vitiligo.breathe.presentation.shared.SegmentOption
+import com.vitiligo.breathe.presentation.shared.SegmentedControl
 import org.maplibre.android.geometry.LatLng
 
 @Composable
@@ -56,6 +62,7 @@ fun MapScreen(
     ) {
         MapLibreContent(
             mapPoints = state.mapPoints,
+            activeMarkerType = state.activeMarkerType,
             cameraTarget = LatLng(cameraState.latitude, cameraState.longitude),
             cameraZoom = cameraState.zoom,
             onCameraIdle = { target, zoom, bounds ->
@@ -70,6 +77,12 @@ fun MapScreen(
             onMarkerClick = { aqi, lat, lng, _ ->
                 if (!isReportingMode) {
                     viewModel.onMarkerSelected(aqi, lat, lng)
+                    keyboardController?.hide()
+                }
+            },
+            onPollutionClick = { id, type, desc, time, lat, lng ->
+                if (!isReportingMode) {
+                    viewModel.onPollutionReportSelected(id, type, desc, time, lat, lng)
                     keyboardController?.hide()
                 }
             },
@@ -98,6 +111,28 @@ fun MapScreen(
                     else viewModel.onMarkerDismissed()
                 }
             )
+        }
+
+        val markerOptions = listOf(
+            SegmentOption(key = "aqi", label = "AQI"),
+            SegmentOption(key = "pollution_report", label = "Reports")
+        )
+
+        if (!isReportingMode) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                SegmentedControl(
+                    options = markerOptions,
+                    selectedKey = state.activeMarkerType,
+                    onOptionSelected = viewModel::onToggleMarkerType,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .statusBarsPadding()
+                        .padding(top = 80.dp)
+                )
+            }
         }
 
         AnimatedVisibility(
@@ -147,6 +182,7 @@ fun MapScreen(
                 exit = slideOutVertically { it } + fadeOut(),
             ) {
                 StandardMapControls(
+                    selectedMarkerType = state.activeMarkerType,
                     selectedPoint = state.selectedPoint,
                     onNavigateToReport = { isReportingMode = true },
                     onNavigateToDetails = navigateToLocationDetailsPreview,

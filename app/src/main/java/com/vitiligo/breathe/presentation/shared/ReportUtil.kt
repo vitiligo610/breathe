@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.vitiligo.breathe.data.remote.model.report.ReportType
+import com.vitiligo.breathe.R
 
 @Composable
 fun getReportIcon(type: ReportType): ImageVector {
@@ -22,7 +23,16 @@ fun getReportIcon(type: ReportType): ImageVector {
     }
 }
 
-@Composable
+fun getDrawableIdForReport(type: ReportType): Int {
+    return when (type) {
+        ReportType.BURNING -> R.drawable.baseline_local_fire_department_24
+        ReportType.INDUSTRIAL -> R.drawable.baseline_factory_24
+        ReportType.VEHICLE -> R.drawable.baseline_directions_car_24
+        ReportType.CONSTRUCTION -> R.drawable.baseline_construction_24
+        ReportType.OTHER -> R.drawable.baseline_warning_24
+    }
+}
+
 fun getReportColor(type: ReportType): Color {
     return when (type) {
         ReportType.BURNING -> Color(0xFFFF5252) // Red-ish

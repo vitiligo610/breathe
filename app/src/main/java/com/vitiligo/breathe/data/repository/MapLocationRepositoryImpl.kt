@@ -17,14 +17,15 @@ class MapLocationRepositoryImpl @Inject constructor(
         swLon: Double,
         neLat: Double,
         neLon: Double,
-        gridResolution: Int
+        gridResolution: Int,
+        markerType: String
     ): Resource<List<MapLocationPoint>> {
 
         return withContext(Dispatchers.IO){
             try {
                 val bbox = "$swLat,$swLon,$neLat,$neLon"
 
-                val response = api.getLocationMap(bbox, gridResolution)
+                val response = api.getLocationMap(bbox, gridResolution, markerType)
 
                 Resource.Success(response)
             } catch (e: Exception) {

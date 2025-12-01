@@ -19,14 +19,14 @@ interface BreatheApi {
     suspend fun getLocationSummary(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("reports_radius_km") reportsRadiusKm: Double = 500.0
+        @Query("reports_radius_km") reportsRadiusKm: Double = 50.0
     ): LocationClimateSummaryResponse
 
     @GET("api/location")
     suspend fun getLocationDetails(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("reports_radius_km") reportsRadiusKm: Double = 500.0
+        @Query("reports_radius_km") reportsRadiusKm: Double = 50.0
     ): LocationClimateDetailsResponse
 
     @GET("api/location/history")
@@ -38,7 +38,8 @@ interface BreatheApi {
     @GET("api/location/map")
     suspend fun getLocationMap(
         @Query("bounding_box") boundingBox: String,
-        @Query("grid_resolution") gridResolution: Int
+        @Query("grid_resolution") gridResolution: Int,
+        @Query("marker_type") markerType: String
     ): List<MapLocationPoint>
 
     @POST("api/location/report")

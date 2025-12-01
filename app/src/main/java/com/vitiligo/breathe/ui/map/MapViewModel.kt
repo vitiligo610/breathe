@@ -1,6 +1,5 @@
 package com.vitiligo.breathe.ui.map
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
+import com.vitiligo.breathe.data.remote.model.report.ReportType
 import com.vitiligo.breathe.domain.manager.GeocodingManager
 import com.vitiligo.breathe.domain.manager.LocationManager
 import com.vitiligo.breathe.domain.model.LocationSearchResult
@@ -17,12 +17,10 @@ import com.vitiligo.breathe.domain.repository.MapLocationRepository
 import com.vitiligo.breathe.domain.util.Resource
 import com.vitiligo.breathe.ui.search.LocationSearchUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.maplibre.android.geometry.LatLng
 import javax.inject.Inject
 
@@ -32,7 +30,6 @@ class MapViewModel @Inject constructor(
     private val searchRepository: LocationSearchRepository,
     private val locationManager: LocationManager,
     private val geocodingManager: GeocodingManager,
-    @param:ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -56,6 +53,22 @@ class MapViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var fetchJob: Job? = null
 
+    fun onToggleMarkerType(type: String) {
+        if (uiState.value.activeMarkerType != type) {
+            uiState.value = uiState.value.copy(
+                mapPoints = emptyList(),
+                selectedPoint = null,
+                activeMarkerType = type
+            )
+
+            onCameraIdle(
+                cameraState.latitude - 0.1, cameraState.longitude - 0.1,
+                cameraState.latitude + 0.1, cameraState.longitude + 0.1,
+                12.0
+            )
+        }
+    }
+
     fun onCameraIdle(
         swLat: Double, swLon: Double,
         neLat: Double, neLon: Double,
@@ -74,7 +87,7 @@ class MapViewModel @Inject constructor(
             }
 
             val result = repository.getMarkers(
-                swLat, swLon, neLat, neLon, gridResolution
+                swLat, swLon, neLat, neLon, gridResolution, uiState.value.activeMarkerType
             )
 
             if (result is Resource.Success) {
@@ -165,14 +178,50 @@ class MapViewModel @Inject constructor(
                 longitude = lng,
                 city = cityName,
                 country = countryName,
-                aqi = aqi
+                aqi = aqi,
+                type = "aqi"
             )
 
-            withContext(Dispatchers.Main) {
-                uiState.value = uiState.value.copy(
-                    selectedPoint = selectedInfo
-                )
+            uiState.value = uiState.value.copy(
+                selectedPoint = selectedInfo
+            )
+        }
+    }
+
+    fun onPollutionReportSelected(
+        reportId: Long,
+        reportType: String,
+        desc: String,
+        time: Long,
+        lat: Double,
+        lng: Double
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var cityName = "Unknown Location"
+            var countryName = "Unknown Country"
+
+            try {
+                val address = geocodingManager.reverseGeocode(lat, lng)
+
+                if (address != null) {
+                    cityName = address.city
+                    countryName = address.country
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
+
+            val selected = SelectedPointInfo(
+                latitude = lat, longitude = lng, city = cityName, country = countryName,
+                type = "pollution_report",
+                reportType = try { ReportType.valueOf(reportType) } catch(_: Exception) { ReportType.OTHER },
+                reportDescription = desc,
+                reportedAt = time
+            )
+
+            uiState.value = uiState.value.copy(
+                selectedPoint = selected
+            )
         }
     }
 

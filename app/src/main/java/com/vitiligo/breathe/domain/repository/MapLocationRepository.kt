@@ -10,6 +10,7 @@ interface MapLocationRepository {
         swLon: Double,
         neLat: Double,
         neLon: Double,
-        gridResolution: Int = 20
+        gridResolution: Int = 20,
+        markerType: String
     ): Resource<List<MapLocationPoint>>
 }
